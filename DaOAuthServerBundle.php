@@ -3,15 +3,12 @@
 namespace Da\OAuthServerBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Acme\HelloBundle\DependencyInjection\UnconventionalExtensionClass;
+use Da\OAuthServerBundle\DependencyInjection\DaOAuthServerExtension;
 
 class DaOAuthServerBundle extends Bundle
 {
-	public function build(ContainerBuilder $container)
+	public function __construct()
     {
-        parent::build($container);
-
-        // register extensions that do not follow the conventions manually
-        $container->registerExtension(new UnconventionalExtensionClass());
+        $this->extension = new DaOAuthServerExtension();
     }
 }
