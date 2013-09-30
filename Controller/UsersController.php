@@ -22,7 +22,8 @@ class UsersController extends Controller
         return array
         	(
         		'username' => $user->getUsername(),
-        		'email' => $user->getEmail()
+        		'email' => $user->getEmail(),
+                'raw' => $user->getRaw()
         	);
     }
 }
