@@ -49,10 +49,6 @@ class SecurityController extends BaseSecurityController
     public function logoutRedirectAction()
     {
         $redirectUri = $this->container->get('session')->get('logout_redirect_uri', null);
-        if ($redirectUri) {
-            return new RedirectResponse($redirectUri, 302);
-        }
-
-        return new RedirectResponse($this->container->get('router')->generate('da_oauthserver_authorize_authorizeauthspace', array('authspace' => $client->getAuthSpace()->getCode())).$parameters, 302);
+        return new RedirectResponse($redirectUri, 302);
     }
 }
