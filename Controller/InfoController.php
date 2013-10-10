@@ -12,7 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 class InfoController extends Controller
 {
     /**
-     * @Route("/info", defaults={"_format"="json"})
+     * @Route("/infos", defaults={"_format"="json"})
      */
     public function getUserInfoAction()
     {
