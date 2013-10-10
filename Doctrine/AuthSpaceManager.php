@@ -3,8 +3,8 @@
 namespace Da\OAuthServerBundle\Doctrine;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Da\AuthModelBundle\Model\AuthSpaceInterface;
-use Da\AuthModelBundle\Model\AuthSpaceManagerInterface;
+use Da\AuthCommonBundle\Model\AuthSpaceInterface;
+use Da\AuthCommonBundle\Model\AuthSpaceManagerInterface;
 
 /**
  * The manager for the authspaces.

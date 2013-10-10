@@ -1,0 +1,30 @@
+access_tokens:
+    type:        rest
+    resource:    Da\OAuthServerBundle\Controller\AccesstokenController
+    prefix:      api
+    name_prefix: api_sso_
+
+users:
+    type:        rest
+    resource:    Da\OAuthServerBundle\Controller\UserController
+    prefix:      api
+    name_prefix: api_sso_
+
+clients:
+    type:        rest
+    resource:    Da\OAuthServerBundle\Controller\ClientController
+    prefix:      api
+    name_prefix: api_sso_
+
+authorizations:
+    resource:    Da\OAuthServerBundle\Controller\AuthorizeController
+    name_prefix: oauth_sso_
+
+infos:
+    resource:    Da\OAuthServerBundle\Controller\InfoController
+    prefix:      api
+    name_prefix: oauth_sso_
+
+security:
+    resource:    Da\OAuthServerBundle\Controller\SecurityController
+    name_prefix: oauth_sso_

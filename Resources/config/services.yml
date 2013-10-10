@@ -1,6 +1,12 @@
 parameters:
     da_oauth_server.user_provider.authspace_email.class: Da\OAuthServerBundle\Security\AuthSpaceEmailUserProvider
     da_oauth_server.authspace_manager.class: Da\OAuthServerBundle\Doctrine\AuthSpaceManager
+    da_oauth_server.client_manager.doctrine.class: Da\OAuthServerBundle\Doctrine\ClientManager
+    da_oauth_server.user_manager.doctrine.class: Da\OAuthServerBundle\Doctrine\UserManager
+    da_oauth_server.client.class: Da\OAuthServerBundle\Entity\Client
+    da_oauth_server.user.class: Da\OAuthServerBundle\Entity\User
+    da_oauth_server.access_token.class: Da\OAuthServerBundle\Entity\AccessToken
+    da_oauth_server.entity_manager.class: ~
 
 services:
     da_oauth_server.user_provider.authspace_email:
@@ -12,3 +18,13 @@ services:
         class: %da_oauth_server.authspace_manager.class%
         public: false
         arguments: [@fos_oauth_server.entity_manager, %da_oauth_server.authspace.class%]
+
+    da_oauth_server.client_manager.doctrine:
+        class: %da_oauth_server.client_manager.doctrine.class%
+        arguments: [@doctrine, %da_oauth_server.client.class%, %da_oauth_server.entity_manager.class%]
+        public: false
+
+    da_oauth_server.user_manager.doctrine:
+        class: %da_oauth_server.user_manager.doctrine.class%
+        arguments: [@doctrine, %da_oauth_server.user.class%, %da_oauth_server.access_token.class%, %da_oauth_server.entity_manager.class%]
+        public: false

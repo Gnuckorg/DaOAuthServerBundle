@@ -7,15 +7,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 /**
- * @Route("/api")
  * @Template()
  */
-class UsersController extends Controller
+class InfoController extends Controller
 {
     /**
-     * @Route("/user", defaults={"_format"="json"})
+     * @Route("/info", defaults={"_format"="json"})
      */
-    public function getUserAction()
+    public function getUserInfoAction()
     {
         $user = $this->get('security.context')->getToken()->getUser();
 

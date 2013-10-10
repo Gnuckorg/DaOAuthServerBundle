@@ -6,8 +6,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use FOS\UserBundle\Security\UserProvider;
 use FOS\UserBundle\Model\UserManagerInterface;
 use FOS\OAuthServerBundle\Controller\AuthorizeController;
-use Da\AuthModelBundle\Model\AuthSpaceInterface;
-use Da\AuthModelBundle\Model\AuthSpaceManagerInterface;
+use Da\AuthCommonBundle\Model\AuthSpaceInterface;
+use Da\AuthCommonBundle\Model\AuthSpaceManagerInterface;
 
 class AuthSpaceEmailUserProvider extends UserProvider
 {

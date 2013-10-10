@@ -19,7 +19,7 @@ Add the bundle and its dependencies in the composer.json file:
 	// ...
     "friendsofsymfony/oauth-server-bundle": "dev-master",
     "friendsofsymfony/user-bundle": "~2.0@dev",
-    "da/auth-model-bundle": "dev-master",
+    "da/auth-common-bundle": "dev-master",
     "da/oauth-server-bundle": "dev-master"
 },
 ```
@@ -42,7 +42,7 @@ $bundles = array(
     // ...
         new FOS\OAuthServerBundle\FOSOAuthServerBundle(),
         new FOS\UserBundle\FOSUserBundle(),
-        new Da\AuthModelBundle\DaAuthModelBundle(),
+        new Da\AuthCommonBundle\DaAuthCommonBundle(),
         new Da\OAuthServerBundle\DaOAuthServerBundle(),
 );
 ```
@@ -57,10 +57,10 @@ Here is the minimal config you will need to use the bundle:
 # FOSAuthServer Configuration
 fos_oauth_server:
     db_driver:           orm
-    client_class:        Da\AuthModelBundle\Entity\Client
-    access_token_class:  Da\AuthModelBundle\Entity\AccessToken
-    refresh_token_class: Da\AuthModelBundle\Entity\RefreshToken
-    auth_code_class:     Da\AuthModelBundle\Entity\AuthCode
+    client_class:        Da\OAuthServerBundle\Entity\Client
+    access_token_class:  Da\OAuthServerBundle\Entity\AccessToken
+    refresh_token_class: Da\OAuthServerBundle\Entity\RefreshToken
+    auth_code_class:     Da\OAuthServerBundle\Entity\AuthCode
     service:
         user_provider: da_oauth_server.user_provider.authspace_email
 
@@ -68,7 +68,7 @@ fos_oauth_server:
 fos_user:
     db_driver: orm
     firewall_name: oauth_authorize
-    user_class: Da\AuthModelBundle\Entity\User
+    user_class: Da\OAuthServerBundle\Entity\User
 
 # Sensio Configuration
 sensio_framework_extra:
@@ -77,7 +77,7 @@ sensio_framework_extra:
 
 # DaOSAuthServer Configuration
 da_oauth_server:
-    authspace_class: Da\AuthModelBundle\Entity\AuthSpace
+    authspace_class: Da\OAuthServerBundle\Entity\AuthSpace
 ```
 
 ### Step 4: Import the routing
@@ -142,7 +142,11 @@ security:
                 csrf_provider: form.csrf_provider
                 login_path:    /login/api
                 check_path:    /oauth/v2/auth/api/login_check
-            logout:    true
+            logout:
+                path:   /oauth/v2/auth/api/logout
+                target: /logout_redirect
+                # BUG: https://github.com/sensiolabs/SensioDistributionBundle/commit/2a518e7c957b66c9478730ca95f67e16ccdc982b
+                invalidate_session: false
 
         login_firewall:
             pattern:    ^/login$
@@ -208,7 +212,11 @@ security:
                 csrf_provider: form.csrf_provider
                 login_path:    /login/white_brand_client
                 check_path:    /oauth/v2/auth/white_brand_client/login_check
-            logout:    true
+            logout:
+                path:   /oauth/v2/auth/white_brand_client/logout
+                target: /logout_redirect
+                # BUG: https://github.com/sensiolabs/SensioDistributionBundle/commit/2a518e7c957b66c9478730ca95f67e16ccdc982b
+                invalidate_session: false
 ```
 
 Create a test sets
@@ -258,7 +266,7 @@ namespace My\OwnBundle\DataFixtures\ORM;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Da\AuthModelBundle\Entity\AuthSpace;
+use Da\OAuthServerBundle\Entity\AuthSpace;
 
 class LoadAuthSpaceData extends AbstractFixture implements OrderedFixtureInterface
 {
@@ -306,7 +314,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Da\AuthModelBundle\Entity\Client;
+use Da\OAuthServerBundle\Entity\Client;
 
 class LoadClientData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
@@ -358,7 +366,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Da\AuthModelBundle\Entity\User;
+use Da\OAuthServerBundle\Entity\User;
 
 class LoadUserData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
