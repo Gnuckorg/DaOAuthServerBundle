@@ -70,11 +70,6 @@ fos_user:
     firewall_name: oauth_authorize
     user_class: Da\OAuthServerBundle\Entity\User
 
-# Sensio Configuration
-sensio_framework_extra:
-    view:    { annotations: false }
-    router:  { annotations: true }
-
 # DaOSAuthServer Configuration
 da_oauth_server:
     authspace_class: Da\OAuthServerBundle\Entity\AuthSpace
@@ -89,9 +84,9 @@ You have to import some routes in order to run the bundle:
 
 # DaOAuthServer Routes
 da_oauth_server:
-    resource: "@DaOAuthServerBundle/Controller/"
-    type:     annotation
-    prefix:   /
+    type: rest
+    resource: "@DaOAuthServerBundle/Resources/config/routing.yml"
+    prefix: /
 
 fos_oauth_server_token:
     resource: "@FOSOAuthServerBundle/Resources/config/routing/token.xml"
@@ -161,7 +156,6 @@ security:
         - { path: ^/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin/, role: ROLE_ADMIN }
 ```
 
 Use the oauth mechanism to protect your API
@@ -278,14 +272,18 @@ class LoadAuthSpaceData extends AbstractFixture implements OrderedFixtureInterfa
     	$authSpace = new AuthSpace();
     	$authSpace
         	->setId(1)
-        	->setCode('api');
+        	->setCode('api')
+            ->setName('API')
+        ;
         $manager->persist($authSpace);
         $this->addReference('authspace_api', $authSpace);
 
         $authSpace = new AuthSpace();
     	$authSpace
         	->setId(2)
-        	->setCode('white_brand_client');
+        	->setCode('white_brand_client')
+            ->setName('Client')
+        ;
         $manager->persist($authSpace);
 
         $manager->flush();
@@ -338,7 +336,8 @@ class LoadClientData extends AbstractFixture implements OrderedFixtureInterface,
     {
     	$clientManager = $this->container->get('fos_oauth_server.client_manager.default');
 		$client = $clientManager->createClient();
-		$client->setRedirectUris(array('http://my-client-domain'));
+		$client->setName('API');
+        $client->setRedirectUris(array('http://my-client-domain'));
         $client->setAllowedGrantTypes(array('token', 'authorization_code'));
         $client->setAuthSpace($this->getReference('authspace_api'));
 		$clientManager->updateClient($client);
@@ -398,8 +397,12 @@ class LoadUserData extends AbstractFixture implements OrderedFixtureInterface, C
         	->setPassword($password)
         	->setEmail('my@email.com')
         	->setEnabled(true)
-            ->setAuthSpace($this->getReference('authspace_api'));
-
+            ->setAuthSpace($this->getReference('authspace_api'))
+            ->setRawData(array(
+                'firstName' => 'John',
+                'lastName' => 'Doe'
+            ))
+        ;
         $manager->persist($user);
         $manager->flush();
     }
