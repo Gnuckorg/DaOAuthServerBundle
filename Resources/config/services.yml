@@ -7,6 +7,7 @@ parameters:
     da_oauth_server.user.class: Da\OAuthServerBundle\Entity\User
     da_oauth_server.access_token.class: Da\OAuthServerBundle\Entity\AccessToken
     da_oauth_server.entity_manager.class: ~
+    da_oauth_server.event.listener.locale.class: Da\OAuthServerBundle\Event\LocaleListener
 
 services:
     da_oauth_server.user_provider.authspace_email:
@@ -28,3 +29,9 @@ services:
         class: %da_oauth_server.user_manager.doctrine.class%
         arguments: [@doctrine, %da_oauth_server.user.class%, %da_oauth_server.access_token.class%, %da_oauth_server.entity_manager.class%]
         public: false
+
+    da_oauth_server.event.listener.locale:
+        class: %da_oauth_server.event.listener.locale.class%
+        arguments: [%locale%]
+        tags: 
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 100 }
