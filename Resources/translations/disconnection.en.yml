@@ -1,0 +1,3 @@
+message: You are logged in the system %authspace% as %user%
+logout: Logout
+cancel: Cancel
