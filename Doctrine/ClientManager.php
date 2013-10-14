@@ -53,7 +53,7 @@ class ClientManager implements ClientManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function retrieveClientFromApiToken($apiToken)
+    public function retrieveClientByApiToken($apiToken)
     {
         $client = $this->em->getRepository($this->class)->findOneBy(array('apiToken' => $apiToken));
     

@@ -62,7 +62,7 @@ class UserManager implements UserManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function retrieveUserFromAccessToken($accessToken)
+    public function retrieveUserByAccessToken($accessToken)
     {
         $accessToken = $this->em->getRepository($this->accessTokenClass)->findOneBy(array('token' => $accessToken));
             
