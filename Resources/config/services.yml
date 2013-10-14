@@ -23,12 +23,10 @@ services:
     da_oauth_server.client_manager.doctrine:
         class: %da_oauth_server.client_manager.doctrine.class%
         arguments: [@doctrine, %da_oauth_server.client.class%, %da_oauth_server.entity_manager.class%]
-        public: false
 
     da_oauth_server.user_manager.doctrine:
         class: %da_oauth_server.user_manager.doctrine.class%
         arguments: [@doctrine, %da_oauth_server.user.class%, %da_oauth_server.access_token.class%, %da_oauth_server.entity_manager.class%]
-        public: false
 
     da_oauth_server.event.listener.locale:
         class: %da_oauth_server.event.listener.locale.class%

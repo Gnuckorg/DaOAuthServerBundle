@@ -18,11 +18,9 @@ class ClientController extends FOSRestController implements ClassResourceInterfa
      */
     public function getAction($apiToken)
     {
-        $soft = (bool)$soft;
-
         try {
             $data = $this->container->get('da_oauth_server.client_manager.doctrine')
-                ->retrieveClientFromApiToken($apiToken)
+                ->retrieveClientByApiToken($apiToken)
             ;
         } catch (InvalidApiTokenException $e) {
             $view = $this->view($e->getMessage(), 404);
