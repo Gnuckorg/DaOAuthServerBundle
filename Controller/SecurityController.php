@@ -49,6 +49,7 @@ class SecurityController extends BaseSecurityController
     public function logoutRedirectAction()
     {
         $redirectUri = $this->container->get('session')->get('logout_redirect_uri', null);
+        
         return new RedirectResponse($redirectUri, 302);
     }
 }

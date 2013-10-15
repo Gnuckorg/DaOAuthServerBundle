@@ -27,8 +27,7 @@ class AuthorizeController extends BaseAuthorizeController
     {
         $client = $this->getClient();
 
-        if (null !== $request->request->get('accepted', null) || null !== $request->request->get('rejected', null))
-        {
+        if (null !== $request->request->get('accepted', null) || null !== $request->request->get('rejected', null)) {
             $request->attributes->add(array('authspace' => $client->getAuthSpace()->getCode()));
             return parent::authorizeAction($request);
         }
@@ -36,15 +35,13 @@ class AuthorizeController extends BaseAuthorizeController
         $parameters = '?';
         foreach (array_merge($request->query->all(), $request->request->all()) as $name => $value)
         {
-            if (is_array($value))
-            {
-                foreach ($value as $subName => $subValue)
-                {
+            if (is_array($value)) {
+                foreach ($value as $subName => $subValue) {
                     $parameters .= $name.'['.$subName.']='.$subValue.'&';
                 }
-            }
-            else
+            } else {
                 $parameters .= $name.'='.$value.'&';
+            }
         }
 
         return new RedirectResponse($this->container->get('router')->generate('da_oauthserver_authorize_authorizeauthspace', array('authspace' => $client->getAuthSpace()->getCode())).$parameters, 302);
@@ -72,17 +69,14 @@ class AuthorizeController extends BaseAuthorizeController
         $client = $this->getClient();
 
         $parameters = '?';
-        foreach (array_merge($request->query->all(), $request->request->all()) as $name => $value)
-        {
-            if (is_array($value))
-            {
-                foreach ($value as $subName => $subValue)
-                {
+        foreach (array_merge($request->query->all(), $request->request->all()) as $name => $value) {
+            if (is_array($value)) {
+                foreach ($value as $subName => $subValue) {
                     $parameters .= $name.'['.$subName.']='.$subValue.'&';
                 }
-            }
-            else
+            } else {
                 $parameters .= $name.'='.$value.'&';
+            }
         }
 
         return new RedirectResponse($this->container->get('router')->generate('da_oauthserver_authorize_disconnectauthspace', array('authspace' => $client->getAuthSpace()->getCode())).$parameters, 302);
@@ -116,12 +110,13 @@ class AuthorizeController extends BaseAuthorizeController
     public function logoutAction(Request $request, $authspace)
     {
         $redirectUri = $request->query->get('redirect_uri', null);
+
         if ($redirectUri) {
             $this->container->get('session')->set('logout_redirect_uri', $redirectUri);
         } else {
             $this->container->get('session')->remove('logout_redirect_uri');
         }
-
+        
         return new RedirectResponse($this->container->get('router')->generate('logout_'.$authspace), 302);
     }
 }
