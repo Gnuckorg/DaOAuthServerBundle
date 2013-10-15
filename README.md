@@ -126,6 +126,10 @@ security:
             id: da_oauth_server.user_provider.authspace_email #fos_user.user_provider.username
 
     firewalls:
+        login_firewall:
+            pattern:    ^/login
+            anonymous:  ~
+
         oauth_token:
             pattern:  ^/oauth/v2/token
             security: false
@@ -142,10 +146,6 @@ security:
                 target: /logout_redirect
                 # BUG: https://github.com/sensiolabs/SensioDistributionBundle/commit/2a518e7c957b66c9478730ca95f67e16ccdc982b
                 invalidate_session: false
-
-        login_firewall:
-            pattern:    ^/login$
-            anonymous:  ~
 
         oauth_firewall:
             pattern:    ^/oauth/v2/auth$
