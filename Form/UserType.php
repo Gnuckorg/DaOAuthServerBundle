@@ -15,16 +15,12 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('authSpace')
-            ->add('raw')
             ->add('username')
             ->add('email')
-            ->add('password')
-            ->add('plainPassword')
-            ->add('locked', null, array('required' => false))
-            ->add('expired', null, array('required' => false))
+            ->add('authSpace')
+            ->add('raw')
             ->add('roles')
-            ->add('credentialsExpired', null, array('required' => false))
+            ->add('locked', null, array('required' => false))
         ;
     }
 

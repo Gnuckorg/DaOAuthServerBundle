@@ -47,6 +47,16 @@ class AuthSpace implements AuthSpaceInterface
     }
 
     /**
+     * Get the id of the authspace.
+     *
+     * @return integer The id.
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Set the id of the authspace.
      *
      * @param integer $id The id.
