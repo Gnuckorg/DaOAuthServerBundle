@@ -166,10 +166,7 @@ security:
                 target: /logout_redirect
                 # BUG: https://github.com/sensiolabs/SensioDistributionBundle/commit/2a518e7c957b66c9478730ca95f67e16ccdc982b
                 invalidate_session: false
-
-        oauth_firewall:
-            pattern:    ^/oauth/v2/auth$
-            anonymous:  true
+            anonymous:  ~
 
     access_control:
         - { path: ^/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
