@@ -126,13 +126,17 @@ security:
             id: da_oauth_server.user_provider.authspace_email #fos_user.user_provider.username
 
     firewalls:
-        login_firewall:
-            pattern:    ^/login
-            anonymous:  ~
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        login:
+            pattern:   ^/login
+            anonymous: ~
 
         logout_redirect:
-            pattern:    ^/logout_redirect$
-            anonymous:  ~
+            pattern:  ^/logout_redirect$
+            security: false
 
         oauth_token:
             pattern:  ^/oauth/v2/token
@@ -145,6 +149,10 @@ security:
         logout:
             pattern:  ^/oauth/v2/logout
             security: false
+
+        oauth:
+            pattern:    ^/oauth/v2/auth$
+            anonymous:  ~
 
         oauth_authorize_api:
             pattern: ^/oauth/v2/auth/api
@@ -164,10 +172,12 @@ security:
             anonymous:  true
 
     access_control:
-        - { path: ^/oauth/v2/auth$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/oauth/v2/auth$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/oauth/v2/auth/(\w|_|-)+/disconnect$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, role: IS_AUTHENTICATED_FULLY }
 ```
 
 Use the oauth mechanism to protect your API

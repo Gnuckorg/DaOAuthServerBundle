@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\OAuthServerBundle\Controller\AuthorizeController as BaseAuthorizeController;
 
 /**
@@ -79,44 +78,6 @@ class AuthorizeController extends BaseAuthorizeController
             }
         }
 
-        return new RedirectResponse($this->container->get('router')->generate('da_oauthserver_authorize_disconnectauthspace', array('authspace' => $client->getAuthSpace()->getCode())).$parameters, 302);
-    }
-
-    /**
-     * Disconnect for an authspace.
-     *
-     * @Route("/oauth/v2/auth/{authspace}/disconnect")
-     * @Method({"GET"})
-     * @Template()
-     */
-    public function disconnectAuthSpaceAction(Request $request, $authspace)
-    {    
-        $authspaceCode = $authspace;
-        $redirectUri = $request->query->get('redirect_uri');
-        $logoutUri = $this->container->get('router')->generate('da_oauthserver_authorize_logout', array('authspace' => $authspace)).'?redirect_uri='.urlencode($redirectUri);
-
-        $authspace = $this->container->get('da_oauth_server.authspace_manager')->findAuthSpaceBy(array('code' => $authspaceCode));
-        $authspaceName = $this->container->get('translator')->trans($authspace->getName());
-
-        return array('redirectUri' => $redirectUri, 'logoutUri' => $logoutUri, 'authspace' => $authspaceName);
-    }
-
-    /**
-     * Logout.
-     *
-     * @Route("/oauth/v2/logout/{authspace}")
-     * @Method({"GET"})
-     */
-    public function logoutAction(Request $request, $authspace)
-    {
-        $redirectUri = $request->query->get('redirect_uri', null);
-
-        if ($redirectUri) {
-            $this->container->get('session')->set('logout_redirect_uri', $redirectUri);
-        } else {
-            $this->container->get('session')->remove('logout_redirect_uri');
-        }
-        
-        return new RedirectResponse($this->container->get('router')->generate('logout_'.$authspace), 302);
+        return new RedirectResponse($this->container->get('router')->generate('da_oauthserver_security_disconnectauthspace', array('authspace' => $client->getAuthSpace()->getCode())).$parameters, 302);
     }
 }

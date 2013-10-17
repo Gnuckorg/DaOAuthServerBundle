@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+    </head>
+    <body>
+        <p>{% trans with {'%authspace%': authspace, '%user%': app.user.email } from "disconnection" %}message{% endtrans %}</p>
+        <a href="{{ logoutUri }}">{% trans from "disconnection" %}logout{% endtrans %}</a>
+       	<a href="{{ redirectUri }}">{% trans from "disconnection" %}cancel{% endtrans %}</a>
+    </body>
+</html>
