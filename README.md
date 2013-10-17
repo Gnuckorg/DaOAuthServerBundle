@@ -130,8 +130,20 @@ security:
             pattern:    ^/login
             anonymous:  ~
 
+        logout_redirect:
+            pattern:    ^/logout_redirect$
+            anonymous:  ~
+
         oauth_token:
             pattern:  ^/oauth/v2/token
+            security: false
+
+        disconnect:
+            pattern:  ^/oauth/v2/disconnect
+            security: false
+
+        logout:
+            pattern:  ^/oauth/v2/logout
             security: false
 
         oauth_authorize_api:
