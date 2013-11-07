@@ -21,7 +21,7 @@ class SerializedArrayType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'type' => 'text',
+            'type' => 'url',
             'options' => array(
                 'label' => ' ',
                 'required' => true,
