@@ -22,6 +22,7 @@ class InfoController extends Controller
         	(
         		'username' => $user->getUsername(),
         		'email' => $user->getEmail(),
+                'roles' => json_encode($user->getRoles()),
                 'raw' => $user->getRaw()
         	);
     }
