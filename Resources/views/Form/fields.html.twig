@@ -1,0 +1,42 @@
+{% block serialized_array_widget %}
+    {% spaceless %}
+        {{ block('collection_widget') }}
+    {% endspaceless %}
+
+    <script type="text/javascript">
+        var collectionHolder = $('.da_oauthserver__serialized_array');
+        var $addLink = $('<a href="#" class="btn btn-default add">Add</a>');
+        var $newLink = $('<div></div>').append($addLink);
+
+        jQuery(document).ready(function() {
+            collectionHolder.append($newLink);
+
+            $addLink.on('click', function(e) {
+                e.preventDefault();
+                addForm(collectionHolder, $newLink);
+            });
+
+            collectionHolder.find('.da_oauthserver__serialized_array_item').parent().each(function() {
+                addFormDeleteLink($(this));
+            });
+        });
+
+        function addForm(collectionHolder, $newLink) {
+            var prototype = collectionHolder.attr('data-prototype');
+            var newForm = prototype.replace(/__name__/g, collectionHolder.children().length);
+            var $newFormDiv = $('<div></div>').append(newForm);
+            $newLink.before($newFormDiv);
+            addFormDeleteLink($newFormDiv);
+        }
+
+        function addFormDeleteLink($formDiv) {
+            var $removeFormA = $('<a href="#" class="btn btn-default">Delete</a>');
+            $formDiv.append($removeFormA);
+
+            $removeFormA.on('click', function(e) {
+                e.preventDefault();
+                $formDiv.remove();
+            });
+        }
+    </script>
+{% endblock %}

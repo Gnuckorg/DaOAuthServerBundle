@@ -16,7 +16,7 @@ Add the bundle and its dependencies in the composer.json file:
 // composer.json
 
 "require": {
-	// ...
+    // ...
     "friendsofsymfony/oauth-server-bundle": "dev-master",
     "friendsofsymfony/user-bundle": "~2.0@dev",
     "da/auth-common-bundle": "dev-master",
@@ -73,6 +73,12 @@ fos_user:
 # DaOSAuthServer Configuration
 da_oauth_server:
     authspace_class: Da\OAuthServerBundle\Entity\AuthSpace
+
+# To well display the serialized_array type
+twig:
+    form:
+        resources:
+            - 'DaOAuthServerBundle:Form:fields.html.twig'
 ```
 
 ### Step 4: Import the routing

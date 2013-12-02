@@ -18,7 +18,7 @@ class ClientType extends AbstractType
             ->add('name')
             ->add('scope')
             ->add('authSpace')
-            ->add('redirectUris')
+            ->add('redirectUris', 'serialized_array')
         ;
     }
 
