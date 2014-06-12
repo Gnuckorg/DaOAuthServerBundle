@@ -2,7 +2,6 @@
 
 namespace Da\OAuthServerBundle\Controller;
 
-use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
@@ -14,21 +13,23 @@ use Da\OAuthServerBundle\Security\AuthSpaceEmailUserProvider;
 
 class SecurityController extends BaseSecurityController
 {
-	/**
+    /**
      * Login for an authspace.
      *
      * @Route("/login/{authspace}")
      */
     public function loginAction(Request $request)
     {
-    	if ($this->container->has('provider'))
-    	{
-    		$userProvider = $this->container->find('provider');
-    		if ($userProvider instanceof AuthSpaceEmailUserProvider)
-    			$userProvider->setAuthSpace($request->attributes->get('authspace'));
-    	}
+        if ($this->container->has('provider'))
+        {
+            $userProvider = $this->container->find('provider');
 
-    	return parent::loginAction($request);
+            if ($userProvider instanceof AuthSpaceEmailUserProvider) {
+                $userProvider->setAuthSpace($request->attributes->get('authspace'));
+            }
+        }
+
+        return parent::loginAction($request);
     }
 
     /**
@@ -61,7 +62,14 @@ class SecurityController extends BaseSecurityController
         }
 
         $authspaceCode = $authspace;
-        $logoutUri = $this->container->get('router')->generate('da_oauthserver_security_logoutauthspace', array('authspace' => $authspace)).'?redirect_uri='.urlencode($redirectUri);
+        $logoutUri = sprintf(
+            '%s?redirect_uri=%s',
+            $this->container->get('router')->generate(
+                'da_oauthserver_security_logoutauthspace',
+                array('authspace' => $authspace)
+            ),
+            urlencode($redirectUri)
+        );
 
         $authspace = $this->container->get('da_oauth_server.authspace_manager')->findAuthSpaceBy(array('code' => $authspaceCode));
         $authspaceName = $this->container->get('translator')->trans($authspace->getName());
@@ -84,18 +92,18 @@ class SecurityController extends BaseSecurityController
         } else {
             $this->container->get('session')->remove('logout_redirect_uri');
         }
-        
+
         return new RedirectResponse($this->container->get('router')->generate('logout_'.$authspace), 302);
     }
 
-    /** 
+    /**
      * @Route("/logout_redirect")
      * Route("/logout_redirect", name="fos_user_security_logout")
      */
     public function logoutRedirectAction()
     {
         $redirectUri = $this->container->get('session')->get('logout_redirect_uri', null);
-        
+
         return new RedirectResponse($redirectUri, 302);
     }
 }

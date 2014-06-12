@@ -25,6 +25,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
         $data = $this->container->get('da_oauth_server.user_manager.doctrine')
             ->retrieveUser($id, $soft)
         ;
+
         if (empty($data)) {
             $view = $this->view('User not found.', 404);
         } else {

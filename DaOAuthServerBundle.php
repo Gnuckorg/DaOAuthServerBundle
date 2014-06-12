@@ -7,7 +7,7 @@ use Da\OAuthServerBundle\DependencyInjection\DaOAuthServerExtension;
 
 class DaOAuthServerBundle extends Bundle
 {
-	public function __construct()
+    public function __construct()
     {
         $this->extension = new DaOAuthServerExtension();
     }

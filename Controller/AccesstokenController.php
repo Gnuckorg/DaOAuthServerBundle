@@ -27,6 +27,7 @@ class AccesstokenController extends FOSRestController implements ClassResourceIn
         } catch (InvalidAccessTokenException $e) {
             $view = $this->view($e->getMessage(), 404);
         }
+
         if (empty($data)) {
             $view = $this->view('User not found.', 404);
         } else {

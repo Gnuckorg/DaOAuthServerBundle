@@ -25,6 +25,7 @@ class ClientController extends FOSRestController implements ClassResourceInterfa
         } catch (InvalidApiTokenException $e) {
             $view = $this->view($e->getMessage(), 404);
         }
+
         if (empty($data)) {
             $view = $this->view('Client not found.', 404);
         } else {
