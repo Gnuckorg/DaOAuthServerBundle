@@ -50,6 +50,14 @@ class Client extends BaseClient implements ClientInterface
      */
     protected $authSpace;
 
+    /**
+     * @ORM\Column(name="trusted", type="boolean", default=false, nullable=false)
+     */
+    protected $trusted = false;
+
+    /**
+     * Constructor.
+     */
     public function __construct()
     {
         $this->setApiToken(Random::generateToken());
@@ -59,10 +67,10 @@ class Client extends BaseClient implements ClientInterface
 
     /**
      * To string.
-     * 
+     *
      * @return string
      */
-    public function __toString() 
+    public function __toString()
     {
         return sprintf('%s %s %s',
             $this->getScope(),
@@ -145,6 +153,30 @@ class Client extends BaseClient implements ClientInterface
     public function setAuthSpace(AuthSpaceInterface $authSpace)
     {
         $this->authSpace = $authSpace;
+
+        return $this;
+    }
+
+    /**
+     * Whether the client is a trusted one or not.
+     *
+     * @return boolean True if this is a trusted client, false otherwise.
+     */
+    public function isTrusted()
+    {
+        return $this->trusted;
+    }
+
+    /**
+     * Set the fact the client is a trusted one or not.
+     *
+     * @param boolean $trusted True if this is a trusted client, false otherwise.
+     *
+     * @return Client This.
+     */
+    public function setTrusted($trusted)
+    {
+        $this->trusted = $trusted ? true : false;
 
         return $this;
     }

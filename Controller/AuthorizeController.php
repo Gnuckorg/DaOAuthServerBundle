@@ -31,19 +31,17 @@ class AuthorizeController extends BaseAuthorizeController
             return parent::authorizeAction($request);
         }
 
-        $parameters = '?';
-        foreach (array_merge($request->query->all(), $request->request->all()) as $name => $value)
-        {
-            if (is_array($value)) {
-                foreach ($value as $subName => $subValue) {
-                    $parameters .= $name.'['.$subName.']='.$subValue.'&';
-                }
-            } else {
-                $parameters .= $name.'='.$value.'&';
-            }
-        }
-
-        return new RedirectResponse($this->container->get('router')->generate('da_oauthserver_authorize_authorizeauthspace', array('authspace' => $client->getAuthSpace()->getCode())).$parameters, 302);
+        return new RedirectResponse(
+            sprintf(
+                '%s?%s',
+                $this->container->get('router')->generate(
+                    'da_oauthserver_authorize_authorizeauthspace',
+                    array('authspace' => $client->getAuthSpace()->getCode())
+                ),
+                $this->retrieveQueryString($request);
+            ),
+            302
+        );
     }
 
     /**
@@ -54,6 +52,40 @@ class AuthorizeController extends BaseAuthorizeController
      */
     public function authorizeAuthSpaceAction(Request $request)
     {
+        $client = $this->getClient();
+
+        if ($client->isTrusted()) {
+            $user = $this->container->get('security.context')->getToken()->getUser();
+
+            if (!$user instanceof UserInterface) {
+                throw new AccessDeniedException('This user does not have access to this section.');
+            }
+
+            if (true === $this->container->get('session')->get('_fos_oauth_server.ensure_logout')) {
+                $this->container->get('session')->invalidate(600);
+                $this->container->get('session')->set('_fos_oauth_server.ensure_logout', true);
+            }
+
+            $form = $this->container->get('fos_oauth_server.authorize.form');
+            $formHandler = $this->container->get('fos_oauth_server.authorize.form.handler');
+
+            $event = $this->container->get('event_dispatcher')->dispatch(
+                OAuthEvent::PRE_AUTHORIZATION_PROCESS,
+                new OAuthEvent($user, $this->getClient())
+            );
+
+            if ($event->isAuthorizedClient()) {
+                $scope = $this->container->get('request')->get('scope', null);
+
+                return $this->container
+                    ->get('fos_oauth_server.server')
+                    ->finishClientAuthorization(true, $user, $request, $scope)
+                ;
+            }
+
+            return $this->processSuccess($user, $formHandler, $request)
+        }
+
         return parent::authorizeAction($request);
     }
 
@@ -67,17 +99,40 @@ class AuthorizeController extends BaseAuthorizeController
     {
         $client = $this->getClient();
 
-        $parameters = '?';
+        return new RedirectResponse(
+            sprintf(
+                '%s?%s',
+                $this->container->get('router')->generate(
+                    'da_oauthserver_security_disconnectauthspace',
+                    array('authspace' => $client->getAuthSpace()->getCode())
+                ),
+                $this->retrieveQueryString($request);
+            ),
+            302
+        );
+    }
+
+    /**
+     * Retrieve the query string of the request.
+     *
+     * @param Request $request The resquest.
+     *
+     * @return string The query string.
+     */
+    public function retrieveQueryString(Request $request)
+    {
+        $queryString = '';
+
         foreach (array_merge($request->query->all(), $request->request->all()) as $name => $value) {
             if (is_array($value)) {
                 foreach ($value as $subName => $subValue) {
-                    $parameters .= $name.'['.$subName.']='.$subValue.'&';
+                    $queryString .= sprintf('%s[%s]=%s&', $name, $subName, $subValue);
                 }
             } else {
-                $parameters .= $name.'='.$value.'&';
+                $queryString .= sprintf('%s=%s&', $name, $subValue);
             }
         }
 
-        return new RedirectResponse($this->container->get('router')->generate('da_oauthserver_security_disconnectauthspace', array('authspace' => $client->getAuthSpace()->getCode())).$parameters, 302);
+        return $queryString;
     }
 }
