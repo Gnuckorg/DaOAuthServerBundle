@@ -8,6 +8,7 @@ parameters:
     da_oauth_server.access_token.class: Da\OAuthServerBundle\Entity\AccessToken
     da_oauth_server.entity_manager.class: ~
     da_oauth_server.event.listener.locale.class: Da\OAuthServerBundle\Event\LocaleListener
+    da_oauth_server.event.listener.authorization.class: Da\OAuthServerBundle\Event\AuthorizationListener
 
 services:
     da_oauth_server.user_provider.authspace_email:
@@ -34,9 +35,14 @@ services:
         tags: 
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 100 }
 
+    da_oauth_server.event.listener.authorization:
+        class: %da_oauth_server.event.listener.authorization.class%
+        arguments: []
+        tags: 
+            - { name: kernel.event_listener, event: fos_oauth_server.pre_authorization_process, method: onPreAuthorizationProcess }
+            - { name: kernel.event_listener, event: fos_oauth_server.post_authorization_process, method: onPostAuthorizationProcess }
 
     # Form
-
     form.type.serialized_array:
         class: Da\OAuthServerBundle\Form\Type\SerializedArrayType
         tags:

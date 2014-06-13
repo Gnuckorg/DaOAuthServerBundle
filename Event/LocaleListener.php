@@ -17,6 +17,8 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 /**
  * Listen to an existing locale or set a session locale.
+ *
+ * @author Thomas Prelot <tprelot@gmail.com>
  */
 class LocaleListener
 {

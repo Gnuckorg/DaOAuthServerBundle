@@ -51,7 +51,7 @@ class Client extends BaseClient implements ClientInterface
     protected $authSpace;
 
     /**
-     * @ORM\Column(name="trusted", type="boolean", default=false, nullable=false)
+     * @ORM\Column(name="trusted", type="boolean", nullable=false)
      */
     protected $trusted = false;
 
