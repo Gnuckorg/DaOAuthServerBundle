@@ -56,6 +56,11 @@ class Client extends BaseClient implements ClientInterface
     protected $trusted = false;
 
     /**
+     * @ORM\Column(name="client_login_path", type="string", nullable=true)
+     */
+    protected $clientLoginPath;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -134,9 +139,7 @@ class Client extends BaseClient implements ClientInterface
     }
 
     /**
-     * Get the authspace of the client.
-     *
-     * @return AuthSpaceInterface The authspace.
+     * {@inheritdoc}
      */
     public function getAuthSpace()
     {
@@ -144,11 +147,7 @@ class Client extends BaseClient implements ClientInterface
     }
 
     /**
-     * Set the authspace of the client.
-     *
-     * @param AuthSpaceInterface $authspace The authspace.
-     *
-     * @return Client This.
+     * {@inheritdoc}
      */
     public function setAuthSpace(AuthSpaceInterface $authSpace)
     {
@@ -158,9 +157,7 @@ class Client extends BaseClient implements ClientInterface
     }
 
     /**
-     * Whether the client is a trusted one or not.
-     *
-     * @return boolean True if this is a trusted client, false otherwise.
+     * {@inheritdoc}
      */
     public function isTrusted()
     {
@@ -168,15 +165,29 @@ class Client extends BaseClient implements ClientInterface
     }
 
     /**
-     * Set the fact the client is a trusted one or not.
-     *
-     * @param boolean $trusted True if this is a trusted client, false otherwise.
-     *
-     * @return Client This.
+     * {@inheritdoc}
      */
     public function setTrusted($trusted)
     {
         $this->trusted = $trusted ? true : false;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClientLoginPath()
+    {
+        return $this->clientLoginPath;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setClientLoginPath($clientLoginPath)
+    {
+        $this->clientLoginPath = $clientLoginPath;
 
         return $this;
     }
