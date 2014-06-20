@@ -2,12 +2,12 @@
 
 namespace Da\OAuthServerBundle\Security;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use FOS\UserBundle\Security\UserProvider;
 use FOS\UserBundle\Model\UserManagerInterface;
 use FOS\OAuthServerBundle\Controller\AuthorizeController;
 use Da\AuthCommonBundle\Model\AuthSpaceInterface;
 use Da\AuthCommonBundle\Model\AuthSpaceManagerInterface;
+use Da\OAuthServerBundle\Http\RequestProviderInterface;
 
 class AuthSpaceEmailUserProvider extends UserProvider
 {
@@ -19,11 +19,11 @@ class AuthSpaceEmailUserProvider extends UserProvider
     protected $authSpace;
 
     /**
-     * The container.
+     * The request provider.
      *
-     * @var ContainerInterface
+     * @var RequestProviderInterface
      */
-    protected $container;
+    protected $requestProvider;
 
     /**
      * The authSpace manager.
@@ -36,13 +36,13 @@ class AuthSpaceEmailUserProvider extends UserProvider
      * Constructor.
      *
      * @param UserManagerInterface      $userManager
-     * @param ContainerInterface        $container
+     * @param RequestProviderInterface  $requestProvider
      * @param AuthSpaceManagerInterface $authspaceManager
      */
-    public function __construct(UserManagerInterface $userManager, ContainerInterface $container, AuthSpaceManagerInterface $authspaceManager)
+    public function __construct(UserManagerInterface $userManager, RequestProviderInterface $requestProvider, AuthSpaceManagerInterface $authspaceManager)
     {
         $this->userManager = $userManager;
-        $this->container = $container;
+        $this->requestProvider = $requestProvider;
         $this->authspaceManager = $authspaceManager;
     }
 
@@ -62,7 +62,7 @@ class AuthSpaceEmailUserProvider extends UserProvider
     protected function findUser($username)
     {
         if (null === $this->authSpace) {
-            $authSpaceCode = $this->container->get('request')->request->get('_authspace', null);
+            $authSpaceCode = $this->requestProvider->get()->request->get('_authspace', null);
             $this->setAuthSpace($this->authspaceManager->findAuthSpaceBy(array('code' => $authSpaceCode)));
         }
 
