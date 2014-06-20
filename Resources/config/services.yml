@@ -1,4 +1,5 @@
 parameters:
+    da_oauth_server.http.request_provider.class: Da\OAuthServerBundle\Http\RequestProvider
     da_oauth_server.user_provider.authspace_email.class: Da\OAuthServerBundle\Security\AuthSpaceEmailUserProvider
     da_oauth_server.authspace_manager.class: Da\OAuthServerBundle\Doctrine\AuthSpaceManager
     da_oauth_server.client_manager.doctrine.class: Da\OAuthServerBundle\Doctrine\ClientManager
@@ -11,10 +12,14 @@ parameters:
     da_oauth_server.event.listener.authorization.class: Da\OAuthServerBundle\Event\AuthorizationListener
 
 services:
+    da_oauth_server.http.request_provider:
+        class: %da_oauth_server.http.request_provider.class%
+        arguments: [@service_container]
+
     da_oauth_server.user_provider.authspace_email:
         class: %da_oauth_server.user_provider.authspace_email.class%
         public: false
-        arguments: [@fos_user.user_manager, @service_container, @da_oauth_server.authspace_manager]
+        arguments: [@fos_user.user_manager, @da_oauth_server.http.request_provider, @da_oauth_server.authspace_manager]
 
     da_oauth_server.authspace_manager.default:
         class: %da_oauth_server.authspace_manager.class%

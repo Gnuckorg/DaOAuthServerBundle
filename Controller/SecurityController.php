@@ -93,6 +93,8 @@ class SecurityController extends BaseSecurityController
             $this->container->get('session')->remove('logout_redirect_uri');
         }
 
+        $this->container->get('session')->remove('_security_oauth');
+
         return new RedirectResponse($this->container->get('router')->generate('logout_'.$authspace), 302);
     }
 

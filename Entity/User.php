@@ -31,7 +31,7 @@ class User extends BaseUser implements UserInterface
 
     /**
      * @ORM\ManyToOne(targetEntity="Da\OAuthServerBundle\Entity\AuthSpace")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(name="auth_space_id", nullable=false)
      */
     protected $authSpace;
 
