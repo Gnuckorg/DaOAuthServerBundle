@@ -3,8 +3,12 @@
 namespace Da\OAuthServerBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
+use Da\OAuthServerBundle\Entity\User;
 
 class UserType extends AbstractType
 {
@@ -17,13 +21,24 @@ class UserType extends AbstractType
         $builder
             ->add('username')
             ->add('email')
-            ->add('password')
+            ->add('plainPassword', 'password', array('required' => true))
             ->add('authSpace')
             ->add('raw')
             ->add('roles')
             ->add('enabled', null, array('required' => false))
             ->add('locked', null, array('required' => false))
         ;
+
+        $builder->addEventListener(
+            FormEvents::PRE_SET_DATA,
+            function (FormEvent $event) {
+                $form = $event->getForm();
+                $user = $event->getData();
+                if ($user && null !== $user->getId()) {
+                    $form->add('plainPassword', 'password', array('required' => false));
+                }
+            }
+        );
     }
 
     /**
