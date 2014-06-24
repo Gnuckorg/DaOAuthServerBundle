@@ -10,6 +10,7 @@ parameters:
     da_oauth_server.entity_manager.class: ~
     da_oauth_server.event.listener.locale.class: Da\OAuthServerBundle\Event\LocaleListener
     da_oauth_server.event.listener.authorization.class: Da\OAuthServerBundle\Event\AuthorizationListener
+    da_oauth_server.security.entry_point.form.class: Da\OAuthServerBundle\Security\EntryPoint\FormAuthenticationEntryPoint
 
 services:
     da_oauth_server.http.request_provider:
@@ -46,6 +47,17 @@ services:
         tags: 
             - { name: kernel.event_listener, event: fos_oauth_server.pre_authorization_process, method: onPreAuthorizationProcess }
             - { name: kernel.event_listener, event: fos_oauth_server.post_authorization_process, method: onPostAuthorizationProcess }
+
+    da_oauth_server.security.entry_point.form: 
+        class: %da_oauth_server.security.entry_point.form.class%
+        public: false
+        abstract: true
+        arguments: [@http_kernel, @service_container, @da_oauth_server.controller.authorize]
+
+    da_oauth_server.controller.authorize:
+        class: Da\OAuthServerBundle\Controller\AuthorizeController
+        calls:
+             - [setContainer, ["@service_container"]]
 
     # Form
     form.type.serialized_array:
