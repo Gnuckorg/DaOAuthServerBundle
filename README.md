@@ -160,6 +160,21 @@ security:
             pattern:    ^/oauth/v2/auth$
             anonymous:  ~
 
+        client_api:
+            pattern:   ^/api/clients
+            da_api:    true
+            stateless: true
+
+        user_api:
+            pattern:   ^/api/users
+            da_api:    true
+            stateless: true
+
+        api:
+            pattern:    ^/api
+            fos_oauth:  true
+            stateless:  true
+
         oauth_authorize_api:
             pattern: ^/oauth/v2/auth/api
             form_login:
