@@ -120,7 +120,13 @@ class AuthorizeController extends BaseAuthorizeController implements ClientProvi
             if (!isset($skippedItems[$name])) {
                 if (is_array($value)) {
                     foreach ($value as $subName => $subValue) {
-                        $queryString .= sprintf('%s[%s]=%s&', $name, $subName, urlencode($subValue));
+                        if (is_array($subValue)) {
+                            foreach ($subValue as $embeddedName => $embeddedValue) {
+                                $queryString .= sprintf('%s[%s][%s]=%s&', $name, $subName, $embeddedName, urlencode($embeddedValue));
+                            }
+                        } else {
+                            $queryString .= sprintf('%s[%s]=%s&', $name, $subName, urlencode($subValue));
+                        }
                     }
                 } else {
                     $queryString .= sprintf('%s=%s&', $name, urlencode($value));

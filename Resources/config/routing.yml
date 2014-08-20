@@ -28,3 +28,7 @@ infos:
 security:
     resource:    Da\OAuthServerBundle\Controller\SecurityController
     name_prefix: oauth_sso_
+
+registration:
+    resource:    Da\OAuthServerBundle\Controller\RegistrationController
+    name_prefix: oauth_sso_
