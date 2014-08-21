@@ -101,8 +101,12 @@ class RegistrationController extends BaseRegistrationController
         $errors = array();
 
         $parent = $form->getParent();
-        $name = $form->getName();
-        while (null !== $parent && null !== $parent->getParent()) {
+        $name = 'main';
+        if ($parent) {
+            $name = $form->getName();
+        }
+
+        while ($parent && $parent->getParent()) {
             $name = sprintf('%s.%s', $parent->getName(), $name);
             $parent = $parent->getParent();
         }
