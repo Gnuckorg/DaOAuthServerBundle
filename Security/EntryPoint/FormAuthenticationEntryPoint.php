@@ -94,6 +94,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
             $clientLoginPath = $client->getClientLoginPath();
 
             if ($client->isTrusted() && $clientLoginPath) {
+                $query = '';
                 $requestParameters = $request->query->all();
 
                 $username = $request->query->get('_username', null);
@@ -119,6 +120,10 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                             $requestParameters[$formName]['_token'] = $requestParameters['_csrf_token'];
                         }
 
+                        $query = http_build_query(array(
+                            'form_cached_values' => $requestParameters[$formName]
+                        ));
+
                         $registeringRequest = $request->duplicate(
                             array(),
                             $requestParameters,
@@ -133,7 +138,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
 
                         $httpKernel = $this->container->get('http_kernel');
                         $response = $httpKernel->handle($registeringRequest, HttpKernelInterface::SUB_REQUEST);
-                    
+
                         if (400 === $response->getStatusCode()) {
                             $content = json_decode($response->getContent(), true);
                             $authError = json_encode($content['error']);
@@ -191,45 +196,32 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                     $redirectUri = $request->query->get('redirect_uri');
                     $parsedUri = parse_url($redirectUri);
 
-                    return new RedirectResponse(
+                    $url = sprintf(
+                        '%s://%s%s?%s',
+                        $parsedUri['scheme'],
+                        $parsedUri['host'],
+                        $clientLoginPath,
                         sprintf(
-                            '%s://%s%s?%s',
-                            $parsedUri['scheme'],
-                            $parsedUri['host'],
-                            $clientLoginPath,
-                            sprintf(
+                            '%s&%s',
+                            http_build_query(array(
                                 'csrf_token[login]=%s&csrf_token[registration]=%s&redirect_uri=%s&auth_error=%s&register=%d',
-                                $loginCsrfToken,
-                                $registrationCsrfToken,
-                                $redirectUri,
-                                $authError,
-                                isset($requestParameters['_register']) ? 1 : 0
-                            )
-                        ),
-                        302
+                                'csrf_token' => array(
+                                    'login' => $loginCsrfToken,
+                                    'registration' => $registrationCsrfToken
+                                ),
+                                'redirect_uri' => $redirectUri,
+                                'auth_error' => $authError,
+                                'register' => isset($requestParameters['_register']) ? 1 : 0
+                            )),
+                            $query
+                        )
                     );
+
+                    return new RedirectResponse($url, 302);
                 }
 
                 // Replay the authorization request after authentication.
                 if ((null !== $username || $register) && empty($authError)) {
-                    $queryString = '';
-
-                    foreach ($request->query->all() as $name => $value) {
-                        if (is_array($value)) {
-                            foreach ($value as $subName => $subValue) {
-                                if (is_array($subValue)) {
-                                    foreach ($subValue as $embeddedName => $embeddedValue) {
-                                        $queryString .= sprintf('%s[%s][%s]=%s&', $name, $subName, $embeddedName, urlencode($embeddedValue));
-                                    }
-                                } else {
-                                    $queryString .= sprintf('%s[%s]=%s&', $name, $subName, urlencode($subValue));
-                                }
-                            }
-                        } else {
-                            $queryString .= sprintf('%s=%s&', $name, urlencode($value));
-                        }
-                    }
-
                     return new RedirectResponse(
                         sprintf(
                             '%s?%s',
@@ -237,7 +229,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                                 'da_oauthserver_authorize_authorizeauthspace',
                                 array('authspace' => $authspace)
                             ),
-                            $queryString
+                            http_build_query($request->query->all())
                         ),
                         302
                     );
