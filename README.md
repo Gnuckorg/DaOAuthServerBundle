@@ -34,6 +34,7 @@ composer.phar update # LINUX
 ### Step 2: Declare in the kernel
 
 Declare the bundles in your kernel:
+DO NOT invert the FOSUserBundle and DaOAuthServerBundle declaration order (bad hack, sorry).
 
 ``` php
 // app/AppKernel.php
@@ -69,6 +70,12 @@ fos_user:
     db_driver: orm
     firewall_name: oauth_authorize
     user_class: Da\OAuthServerBundle\Entity\User
+    profile:
+        form:
+            validation_groups:  [AuthspaceProfile, Default]
+    registration:
+        form:
+            validation_groups:  [AuthspaceRegistration, Default]
 
 # DaOSAuthServer Configuration
 da_oauth_server:

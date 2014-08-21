@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping
+        http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="FOS\UserBundle\Model\User">
+        <property name="username">
+            <constraint name="NotBlank">
+                <option name="message">fos_user.username.blank</option>
+                <option name="groups">
+                    <value>AuthspaceRegistration</value>
+                    <value>AuthspaceProfile</value>
+                </option>
+            </constraint>
+            <constraint name="Length">
+                <option name="min">2</option>
+                <option name="minMessage">fos_user.username.short</option>
+                <option name="max">255</option>
+                <option name="maxMessage">fos_user.username.long</option>
+                <option name="groups">
+                    <value>AuthspaceRegistration</value>
+                    <value>AuthspaceProfile</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="email">
+            <constraint name="NotBlank">
+                <option name="message">fos_user.email.blank</option>
+                <option name="groups">
+                    <value>AuthspaceRegistration</value>
+                    <value>AuthspaceProfile</value>
+                </option>
+            </constraint>
+            <constraint name="Length">
+                <option name="min">2</option>
+                <option name="minMessage">fos_user.email.short</option>
+                <option name="max">254</option>
+                <option name="maxMessage">fos_user.email.long</option>
+                <option name="groups">
+                    <value>AuthspaceRegistration</value>
+                    <value>AuthspaceProfile</value>
+                </option>
+            </constraint>
+            <constraint name="Email">
+                <option name="message">fos_user.email.invalid</option>
+                <option name="groups">
+                    <value>AuthspaceRegistration</value>
+                    <value>AuthspaceProfile</value>
+                </option>
+            </constraint>
+        </property>
+
+        <property name="plainPassword">
+            <constraint name="NotBlank">
+                <option name="message">fos_user.password.blank</option>
+                <option name="groups">
+                    <value>AuthspaceRegistration</value>
+                    <value>ResetPassword</value>
+                    <value>ChangePassword</value>
+                </option>
+            </constraint>
+            <constraint name="Length">
+                <option name="min">2</option>
+                <option name="max">4096</option>
+                <option name="minMessage">fos_user.password.short</option>
+                <option name="groups">
+                    <value>AuthspaceRegistration</value>
+                    <value>AuthspaceProfile</value>
+                    <value>ResetPassword</value>
+                    <value>ChangePassword</value>
+                </option>
+            </constraint>
+        </property>
+
+        <constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">
+            <option name="fields">
+                <value>usernameCanonical</value>
+                <value>authSpace</value>
+            </option>
+            <option name="errorPath">username</option>
+            <option name="message">fos_user.username.already_used</option>
+            <option name="groups">
+                <value>AuthspaceRegistration</value>
+                <value>AuthspaceProfile</value>
+            </option>
+        </constraint>
+
+        <constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">
+            <option name="fields">
+                <value>emailCanonical</value>
+                <value>authSpace</value>
+            </option>
+            <option name="errorPath">email</option>
+            <option name="message">fos_user.email.already_used</option>
+            <option name="groups">
+                <value>AuthspaceRegistration</value>
+                <value>AuthspaceProfile</value>
+            </option>
+        </constraint>
+    </class>
+</constraint-mapping>
