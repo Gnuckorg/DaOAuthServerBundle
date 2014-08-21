@@ -45,7 +45,7 @@ class AuthorizeController extends BaseAuthorizeController implements ClientProvi
                     'da_oauthserver_authorize_authorizeauthspace',
                     array('authspace' => $authspace)
                 ),
-                $this->retrieveQueryString($request)
+                http_build_query(array_merge($request->query->all(), $request->request->all()))
             ),
             302
         );
@@ -95,46 +95,10 @@ class AuthorizeController extends BaseAuthorizeController implements ClientProvi
                     'da_oauthserver_security_disconnectauthspace',
                     array('authspace' => $authspace)
                 ),
-                $this->retrieveQueryString($request)
+                http_build_query(array_merge($request->query->all(), $request->request->all()))
             ),
             302
         );
-    }
-
-    /**
-     * Retrieve the query string of the request.
-     *
-     * @param Request $request The resquest.
-     *
-     * @return string The query string.
-     */
-    public function retrieveQueryString(Request $request)
-    {
-        $queryString = '';
-
-        $skippedItems = array(
-            '_submit'  => true
-        );
-
-        foreach (array_merge($request->query->all(), $request->request->all()) as $name => $value) {
-            if (!isset($skippedItems[$name])) {
-                if (is_array($value)) {
-                    foreach ($value as $subName => $subValue) {
-                        if (is_array($subValue)) {
-                            foreach ($subValue as $embeddedName => $embeddedValue) {
-                                $queryString .= sprintf('%s[%s][%s]=%s&', $name, $subName, $embeddedName, urlencode($embeddedValue));
-                            }
-                        } else {
-                            $queryString .= sprintf('%s[%s]=%s&', $name, $subName, urlencode($subValue));
-                        }
-                    }
-                } else {
-                    $queryString .= sprintf('%s=%s&', $name, urlencode($value));
-                }
-            }
-        }
-
-        return $queryString;
     }
 
     /**
