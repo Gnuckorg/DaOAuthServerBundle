@@ -18,7 +18,13 @@ use Da\AuthCommonBundle\Model\UserInterface;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="User")
+ * @ORM\Table(
+ *     name="User",
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(name="username_authspace", columns={"username_canonical", "auth_space_id"}),
+ *         @ORM\UniqueConstraint(name="email_authspace", columns={"email_canonical", "auth_space_id"})
+ *     }
+ * )
  */
 class User extends BaseUser implements UserInterface
 {
@@ -39,6 +45,16 @@ class User extends BaseUser implements UserInterface
      * @ORM\Column(name="raw", type="string", nullable=true)
      */
     protected $raw = '{}';
+
+    /**
+     * ORM\Column(name="username_canonical", type="string", length=255, unique=false, nullable=false)
+     */
+    //protected $usernameCanonical;
+
+    /**
+     * ORM\Column(name="email_canonical", type="string", length=255, unique=false, nullable=false)
+     */
+    //protected $emailCanonical;
 
     /**
      * To string.

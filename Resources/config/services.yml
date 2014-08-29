@@ -24,7 +24,7 @@ services:
 
     da_oauth_server.authspace_manager.default:
         class: %da_oauth_server.authspace_manager.class%
-        public: false
+        public: true
         arguments: [@fos_oauth_server.entity_manager, %da_oauth_server.authspace.class%]
 
     da_oauth_server.client_manager.doctrine:

@@ -39,6 +39,7 @@ class SecurityController extends BaseSecurityController
     {
         $data['authspace'] = $this->container->get('request')->attributes->get('authspace');
         $data['check_route'] = 'login_check_'.$data['authspace'];
+        $data['csrf_token'] = false;
 
         $template = sprintf('DaOAuthServerBundle:Security:login.html.%s', $this->container->getParameter('fos_user.template.engine'));
 
