@@ -116,9 +116,9 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                         if (!isset($formParameters['raw'])) {
                             $requestParameters[$formName]['raw'] = array();
                         }
-                        if (!isset($formParameters['_token'])) {
+                        /*if (!isset($formParameters['_token'])) {
                             $requestParameters[$formName]['_token'] = $requestParameters['_csrf_token'];
-                        }
+                        }*/
 
                         $query = http_build_query(array(
                             'form_cached_values' => $requestParameters[$formName]
@@ -155,7 +155,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                                 '_username' => $requestParameters['_username'],
                                 '_password' => $requestParameters['_password'],
                                 '_remember_me' => isset($requestParameters['_remember_me']) ? 1 : 0,
-                                '_csrf_token' => $requestParameters['_csrf_token'],
+                                //'_csrf_token' => $requestParameters['_csrf_token'],
                                 '_authspace' => $authspace
                             ),
                             array(),
