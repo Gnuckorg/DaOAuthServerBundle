@@ -155,7 +155,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                                 '_username' => $requestParameters['_username'],
                                 '_password' => $requestParameters['_password'],
                                 '_remember_me' => isset($requestParameters['_remember_me']) ? 1 : 0,
-                                //'_csrf_token' => $requestParameters['_csrf_token'],
+                                //'_csrf_token' => isset($requestParameters['_csrf_token']) ? $requestParameters['_csrf_token'] : null,
                                 '_authspace' => $authspace
                             ),
                             array(),
@@ -174,7 +174,6 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                         $firewall = $this->container->get('security.firewall');
                         $firewall->onKernelRequest($event);
                         $requestProvider->reset();
-                        
                         $token = $this->container->get('security.context')->getToken();
                         if (null === $token) {
                             $authError = $request->getSession()->get(SecurityContextInterface::AUTHENTICATION_ERROR)->getMessage();
@@ -204,7 +203,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                         sprintf(
                             '%s&%s',
                             http_build_query(array(
-                                'csrf_token[login]=%s&csrf_token[registration]=%s&redirect_uri=%s&auth_error=%s&register=%d',
+                                /*'csrf_token[login]=%s&csrf_token[registration]=%s&*/'redirect_uri=%s&auth_error=%s&register=%d',
                                 'csrf_token' => array(
                                     'login' => $loginCsrfToken,
                                     'registration' => $registrationCsrfToken
@@ -222,6 +221,11 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
 
                 // Replay the authorization request after authentication.
                 if ((null !== $username || $register) && empty($authError)) {
+                    $queryParameters = $request->query->all();
+                    unset($queryParameters['_username']);
+                    unset($queryParameters['_password']);
+                    unset($queryParameters['register']);
+
                     return new RedirectResponse(
                         sprintf(
                             '%s?%s',
@@ -229,7 +233,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                                 'da_oauthserver_authorize_authorizeauthspace',
                                 array('authspace' => $authspace)
                             ),
-                            http_build_query($request->query->all())
+                            http_build_query($queryParameters)
                         ),
                         302
                     );
