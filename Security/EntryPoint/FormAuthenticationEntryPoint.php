@@ -181,40 +181,54 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                     }
                 }
 
-                // Redirect to the client login page.
+                // Handle case of a client forwarded login.
                 if ((null === $username && !$register) || !empty($authError)) {
-                    $loginCsrfToken = $this->container->has('form.csrf_provider')
-                        ? $this->container->get('form.csrf_provider')->generateCsrfToken('authenticate')
-                        : null
-                    ;
-                    $registrationCsrfToken = $this->container->has('form.csrf_provider')
-                        ? $this->container->get('form.csrf_provider')->generateCsrfToken('registration')
-                        : null
-                    ;
-
+                    $errorPath = $request->query->get('error_path', null);
                     $redirectUri = $request->query->get('redirect_uri');
                     $parsedUri = parse_url($redirectUri);
 
-                    $url = sprintf(
-                        '%s://%s%s?%s',
-                        $parsedUri['scheme'],
-                        $parsedUri['host'],
-                        $clientLoginPath,
-                        sprintf(
-                            '%s&%s',
+                    // Handle proxy connection errors.
+                    if (!empty($authError) && $errorPath) {
+                        $url = sprintf(
+                            '%s://%s%s?%s',
+                            $parsedUri['scheme'],
+                            $parsedUri['host'],
+                            $errorPath,
                             http_build_query(array(
-                                /*'csrf_token[login]=%s&csrf_token[registration]=%s&*/'redirect_uri=%s&auth_error=%s&register=%d',
-                                'csrf_token' => array(
-                                    'login' => $loginCsrfToken,
-                                    'registration' => $registrationCsrfToken
-                                ),
-                                'redirect_uri' => $redirectUri,
-                                'auth_error' => $authError,
-                                'register' => isset($requestParameters['_register']) ? 1 : 0
-                            )),
-                            $query
-                        )
-                    );
+                                'auth_error' => $authError
+                            ))
+                        );
+                    // Redirect to the client login page.
+                    } else {
+                        /*$loginCsrfToken = $this->container->has('form.csrf_provider')
+                            ? $this->container->get('form.csrf_provider')->generateCsrfToken('authenticate')
+                            : null
+                        ;
+                        $registrationCsrfToken = $this->container->has('form.csrf_provider')
+                            ? $this->container->get('form.csrf_provider')->generateCsrfToken('registration')
+                            : null
+                        ;*/
+
+                        $url = sprintf(
+                            '%s://%s%s?%s',
+                            $parsedUri['scheme'],
+                            $parsedUri['host'],
+                            $clientLoginPath,
+                            sprintf(
+                                '%s&%s',
+                                http_build_query(array(
+                                    'csrf_token' => array(
+                                        'login' => $loginCsrfToken,
+                                        'registration' => $registrationCsrfToken
+                                    ),
+                                    'redirect_uri' => $redirectUri,
+                                    'auth_error' => $authError,
+                                    'register' => isset($requestParameters['_register']) ? 1 : 0
+                                )),
+                                $query
+                            )
+                        );
+                    }
 
                     return new RedirectResponse($url, 302);
                 }
