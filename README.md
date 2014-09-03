@@ -131,6 +131,8 @@ fos_user_change_password:
 # app/config/security.yml
 
 security:
+    session_fixation_strategy: none # If you want to use the proxy login/registration (do the same on the client side)
+
     encoders:
         FOS\UserBundle\Model\UserInterface: sha512
 
