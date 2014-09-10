@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Http\HttpUtils;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Security\Core\SecurityContextInterface;
@@ -96,17 +97,15 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
             if ($client->isTrusted() && $clientLoginPath) {
                 $query = '';
                 $requestParameters = $request->query->all();
-
                 $username = $request->query->get('_username', null);
-                $register = isset($requestParameters['_register']) ? true : false;
+                $account = $request->query->get('account', null);
                 $authError = '';
 
                 // Forward the client login form to the SSO for authentication.
-                if ($username || $register) {
-                    // Handle registering.
-                    if ($register) {
+                if ($username || $account) {
+                    // Handle registration and profile.
+                    if ($account) {
                         $router = $this->container->get('router');
-                        $requestUri = $router->generate('da_oauthserver_registration_register', array('authspace' => $authspace), false);
                         $formName = $requestParameters['form_name'];
                         $formParameters = $requestParameters[$formName];
 
@@ -124,7 +123,28 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                             'form_cached_values' => $requestParameters[$formName]
                         ));
 
-                        $registeringRequest = $request->duplicate(
+                        switch ($account) {
+                            case 'registration':
+                                $requestUri = $router->generate(
+                                    'da_oauthserver_registration_register',
+                                    array('authspace' => $authspace),
+                                    false
+                                );
+
+                                break;
+                            case 'profile':
+                                $requestUri = $router->generate(
+                                    'da_oauthserver_profile_edit',
+                                    array('authspace' => $authspace),
+                                    false
+                                );
+                                
+                                break;
+                            default:
+                                throw new HttpException(400, 'Parameter "account" authorized values are ["registration", "profile"].'); 
+                        }
+
+                        $accountRequest = $request->duplicate(
                             array(),
                             $requestParameters,
                             array(),
@@ -137,13 +157,13 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                         );
 
                         $httpKernel = $this->container->get('http_kernel');
-                        $response = $httpKernel->handle($registeringRequest, HttpKernelInterface::SUB_REQUEST);
+                        $response = $httpKernel->handle($accountRequest, HttpKernelInterface::SUB_REQUEST, false);
 
                         if (400 === $response->getStatusCode()) {
                             $content = json_decode($response->getContent(), true);
                             $authError = json_encode($content['error']);
                         } else {
-                            unset($requestParameters['_register']);
+                            unset($requestParameters['account']);
                         }
                     // Handle login.
                     } else {
@@ -182,7 +202,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                 }
 
                 // Handle case of a client forwarded login.
-                if ((null === $username && !$register) || !empty($authError)) {
+                if ((null === $username && !$account) || !empty($authError)) {
                     $errorPath = $request->query->get('error_path', null);
                     $redirectUri = $request->query->get('redirect_uri');
                     $parsedUri = parse_url($redirectUri);
@@ -217,13 +237,13 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                             sprintf(
                                 '%s&%s',
                                 http_build_query(array(
-                                    'csrf_token' => array(
+                                    /*'csrf_token' => array(
                                         'login' => $loginCsrfToken,
                                         'registration' => $registrationCsrfToken
-                                    ),
+                                    ),*/
                                     'redirect_uri' => $redirectUri,
                                     'auth_error' => $authError,
-                                    'register' => isset($requestParameters['_register']) ? 1 : 0
+                                    'account' => $account
                                 )),
                                 $query
                             )
@@ -234,11 +254,11 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                 }
 
                 // Replay the authorization request after authentication.
-                if ((null !== $username || $register) && empty($authError)) {
+                if ((null !== $username || $account) && empty($authError)) {
                     $queryParameters = $request->query->all();
                     unset($queryParameters['_username']);
                     unset($queryParameters['_password']);
-                    unset($queryParameters['register']);
+                    unset($queryParameters['account']);
 
                     return new RedirectResponse(
                         sprintf(

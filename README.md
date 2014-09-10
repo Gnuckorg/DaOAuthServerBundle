@@ -199,8 +199,10 @@ security:
             anonymous:  ~
 
     access_control:
+        - { path: ^/api, role: IS_AUTHENTICATED_FULLY }
         - { path: ^/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/profile, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/oauth/v2/auth$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/oauth/v2/auth/(\w|_|-)+/disconnect$, role: IS_AUTHENTICATED_ANONYMOUSLY }

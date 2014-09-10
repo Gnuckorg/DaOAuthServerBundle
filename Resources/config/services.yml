@@ -48,9 +48,8 @@ services:
             - { name: kernel.event_listener, event: fos_oauth_server.pre_authorization_process, method: onPreAuthorizationProcess }
             - { name: kernel.event_listener, event: fos_oauth_server.post_authorization_process, method: onPostAuthorizationProcess }
 
-    da_oauth_server.security.entry_point.form: 
+    da_oauth_server.security.entry_point.form:
         class: %da_oauth_server.security.entry_point.form.class%
-        public: false
         abstract: true
         arguments: [@http_kernel, @service_container, @da_oauth_server.controller.authorize]
 

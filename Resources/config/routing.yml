@@ -32,3 +32,7 @@ security:
 registration:
     resource:    Da\OAuthServerBundle\Controller\RegistrationController
     name_prefix: oauth_sso_
+
+profile:
+    resource:    Da\OAuthServerBundle\Controller\ProfileController
+    name_prefix: oauth_sso_
