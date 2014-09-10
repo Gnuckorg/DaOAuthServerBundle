@@ -7,8 +7,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Form\FormInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\UserBundle\FOSUserEvents;
 use FOS\UserBundle\Event\FormEvent;
 use FOS\UserBundle\Event\GetResponseUserEvent;
@@ -16,7 +14,7 @@ use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\Controller\RegistrationController as BaseRegistrationController;
 
 class RegistrationController extends BaseRegistrationController
-{	
+{
     /**
      * Registering for an authspace.
      *
@@ -76,11 +74,13 @@ class RegistrationController extends BaseRegistrationController
 
                 return $response;
             } else {
-                return new Response(
-                    json_encode(array('error' => $this->getFormErrors($form))),
-                    400,
-                    array('Content-Type' => 'application/json')
-                );
+                if ($request->request->get('account', false)) {
+                    return new Response(
+                        json_encode(array('error' => $this->getFormErrors($form))),
+                        400,
+                        array('Content-Type' => 'application/json')
+                    );
+                }
             }
         }
 
