@@ -19,6 +19,7 @@ class InfoController extends Controller
         $user = $this->get('security.context')->getToken()->getUser();
 
         return array(
+            'id' => $user->getId(),
             'username' => $user->getUsername(),
             'email' => $user->getEmail(),
             'roles' => json_encode($user->getRoles()),
