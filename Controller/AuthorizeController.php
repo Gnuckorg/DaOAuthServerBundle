@@ -35,7 +35,7 @@ class AuthorizeController extends BaseAuthorizeController implements ClientProvi
 
         if (null !== $request->request->get('accepted', null) || null !== $request->request->get('rejected', null)) {
             $request->attributes->add(array('authspace' => $authspace));
-            
+
             return parent::authorizeAction($request);
         }
 
@@ -61,8 +61,9 @@ class AuthorizeController extends BaseAuthorizeController implements ClientProvi
     public function authorizeAuthSpaceAction(Request $request, $authspace)
     {
         $account = $request->query->get('account', false);
+        $logout = $request->query->get('logout', false);
 
-        if ($account) {
+        if ($account || $logout) {
             $entryPoint = $this->container->get(
                 sprintf(
                     'security.authentication.entry_point.da_oauth_server.form.oauth_authorize_%s',

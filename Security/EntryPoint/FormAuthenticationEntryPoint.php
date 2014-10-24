@@ -75,7 +75,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
         $this->kernel = $kernel;
         $this->container = $container;
         $this->clientProvider = $clientProvider;
-        
+
         parent::__construct($kernel, $httpUtils, $loginPath, $useForward);
     }
 
@@ -138,10 +138,10 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                                     array('authspace' => $authspace),
                                     false
                                 );
-                                
+
                                 break;
                             default:
-                                throw new HttpException(400, 'Parameter "account" authorized values are ["registration", "profile"].'); 
+                                throw new HttpException(400, 'Parameter "account" authorized values are ["registration", "profile"].');
                         }
 
                         $accountRequest = $request->duplicate(
@@ -195,6 +195,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                         $firewall->onKernelRequest($event);
                         $requestProvider->reset();
                         $token = $this->container->get('security.context')->getToken();
+
                         if (null === $token) {
                             $authError = $request->getSession()->get(SecurityContextInterface::AUTHENTICATION_ERROR)->getMessage();
                         }
@@ -259,6 +260,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                     unset($queryParameters['_username']);
                     unset($queryParameters['_password']);
                     unset($queryParameters['account']);
+                    unset($queryParameters['logout']);
 
                     return new RedirectResponse(
                         sprintf(
