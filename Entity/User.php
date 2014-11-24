@@ -42,7 +42,7 @@ class User extends BaseUser implements UserInterface
     protected $authSpace;
 
     /**
-     * @ORM\Column(name="raw", type="string", nullable=true)
+     * @ORM\Column(name="raw", type="text", nullable=true)
      */
     protected $raw = '{}';
 
@@ -58,10 +58,10 @@ class User extends BaseUser implements UserInterface
 
     /**
      * To string.
-     * 
+     *
      * @return string
      */
-    public function __toString() 
+    public function __toString()
     {
         return sprintf('%s',
             $this->getEmail()
