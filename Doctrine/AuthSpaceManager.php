@@ -39,4 +39,12 @@ class AuthSpaceManager implements AuthSpaceManagerInterface
     {
         return $this->repository->findOneBy($criteria);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function findAuthSpacesBy(array $criteria = array())
+    {
+        return $this->repository->findBy($criteria);
+    }
 }
