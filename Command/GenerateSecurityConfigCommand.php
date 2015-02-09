@@ -92,16 +92,69 @@ security:
 EOT
         );
 
+        $authspaces = $container
+            ->get('da_oauth_server.authspace_manager.default')
+            ->findAuthSpacesBy()
+        ;
+
+        foreach ($authspaces as $authspace) {
+            $code = $authspace->getCode();
+
+            if ('api' !== $code) {
+                fwrite($file, <<<EOT
+
+        oauth_authorize_{$code}:
+            pattern: ^/oauth/v2/auth/{$code}
+            da_oauth_form_login:
+                provider:      fos_userbundle
+                login_path:    /login/{$code}
+                check_path:    /oauth/v2/auth/{$code}/login_check
+            logout:
+                path:   /oauth/v2/auth/{$code}/logout
+                target: /logout_redirect
+                # BUG: https://github.com/sensiolabs/SensioDistributionBundle/commit/2a518e7c957b66c9478730ca95f67e16ccdc982b
+                invalidate_session: false
+            anonymous: ~
+
+EOT
+                );
+            }
+        }
+
+        fwrite($file, <<<EOT
+
+        oauth_authorize_api:
+            pattern: (^/oauth/v2/auth/api|^/)
+            da_oauth_form_login:
+                provider:      fos_userbundle
+                login_path:    /login/api
+                check_path:    /oauth/v2/auth/api/login_check
+                default_target_path: tms_sso
+            logout:
+                path:   /oauth/v2/auth/api/logout
+                target: /logout_redirect
+                # BUG: https://github.com/sensiolabs/SensioDistributionBundle/commit/2a518e7c957b66c9478730ca95f67e16ccdc982b
+                invalidate_session: false
+            anonymous: ~
+
+EOT
+            );
+
         $output->writeln('<comment>File created.</comment>');
         $output->writeln(<<<EOT
 
-<comment>------------------------------------------------
-If this has not been done yet, add the following
+<comment>-----------------------------------------------------
+If this has not been done yet, replace the following
 lines in your config.yml:</comment>
 
 imports:
+    - { resource: security.yml }
+
+<comment>with:</comment>
+
+imports:
     - { resource: $relativePath }
-<comment>------------------------------------------------</comment>
+<comment>-----------------------------------------------------</comment>
 
 
 EOT
