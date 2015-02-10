@@ -88,7 +88,63 @@ EOT
         $file = fopen($fullPath, 'a+');
         fwrite($file, <<<EOT
 security:
+    session_fixation_strategy: none
+
+    encoders:
+        FOS\UserBundle\Model\UserInterface: sha512
+
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+    providers:
+        fos_userbundle:
+            id: da_oauth_server.user_provider.authspace_email
+
     firewalls:
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        login:
+            pattern:   ^/login
+            anonymous: ~
+
+        logout_redirect:
+            pattern:  ^/logout_redirect$
+            security: false
+
+        oauth_token:
+            pattern:  ^/oauth/v2/token
+            security: false
+
+        disconnect:
+            pattern:  ^/oauth/v2/disconnect
+            security: false
+
+        logout:
+            pattern:  ^/oauth/v2/logout
+            security: false
+
+        oauth:
+            pattern:   ^/oauth/v2/auth$
+            anonymous: ~
+
+        client_api:
+            pattern:   ^/api/clients
+            da_api:    true
+            stateless: true
+
+        user_api:
+            pattern:   ^/api/users
+            da_api:    true
+            stateless: true
+
+        api:
+            pattern:    ^/api
+            fos_oauth:  true
+            stateless:  true
+
 EOT
         );
 
@@ -137,8 +193,21 @@ EOT
                 invalidate_session: false
             anonymous: ~
 
+    access_control:
+        - { path: ^/api, role: IS_AUTHENTICATED_FULLY }
+        - { path: ^/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/profile, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/admin, role: ROLE_ADMIN }
+        - { path: ^/oauth/v2/auth$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/oauth/v2/auth/(\w|_|-)+/disconnect$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, role: IS_AUTHENTICATED_FULLY }
+
 EOT
             );
+
+
 
         $output->writeln('<comment>File created.</comment>');
         $output->writeln(<<<EOT
