@@ -285,6 +285,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
                     'username',
                     'email',
                     'password',
+                    'authspace',
                     'raw',
                     'enabled'
                 )
