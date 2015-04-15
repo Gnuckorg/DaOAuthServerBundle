@@ -275,7 +275,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
             $user = $userManager->findUserBy(array('username' => $username, 'authSpace' => $authspace->getId()));
 
             if (null === $user) {
-                $view = $this->view(array('error' => sprintf('User "%s" not found', $username), 404);
+                $view = $this->view(array('error' => sprintf('User "%s" not found', $username)), 404);
             } else {
                 $view = $this->view(array('id' => $user->getId()), 200);
             }
