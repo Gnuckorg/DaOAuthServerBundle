@@ -247,8 +247,38 @@ class UserController extends FOSRestController implements ClassResourceInterface
             $userManager->updateUser($user);
 
             $view = $this->view(array(), 204);
-        } catch (\LogicException $exception) {
-            $view = $this->view(array('error' => $exception->getMessage()), 404);
+        } catch (\Exception $exception) {
+            $view = $this->view(array('error' => $exception->getMessage()), 400);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * [GET] /users/id
+     * Get a user id from a username.
+     *
+     * @Get("/users/id")
+     *
+     * @QueryParam(name="username", strict=true, description="The username.")
+     *
+     * @param string $username The username.
+     */
+    public function getFromUsernameAction($username)
+    {
+        try {
+            $request = $this->container->get('request');
+            $userManager = $this->container->get('fos_user.user_manager');
+
+            $authspace = $this->getClient($request)->getAuthSpace();
+
+            $user = $userManager->findUserBy(array('username' => $username, 'authSpace' => $authspace->getId()));
+
+            if (null === $user) {
+                $view = $this->view(array('error' => sprintf('User "%s" not found', $username), 404);
+            } else {
+                $view = $this->view(array('id' => $user->getId()), 200);
+            }
         } catch (\Exception $exception) {
             $view = $this->view(array('error' => $exception->getMessage()), 400);
         }
@@ -283,9 +313,6 @@ class UserController extends FOSRestController implements ClassResourceInterface
             }
 
             $view = $this->view(array('available' => $available), 200);
-
-        } catch (\LogicException $exception) {
-            $view = $this->view(array('error' => $exception->getMessage()), 404);
         } catch (\Exception $exception) {
             $view = $this->view(array('error' => $exception->getMessage()), 400);
         }
