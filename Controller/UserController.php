@@ -104,7 +104,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
             $raw = $this->formatRawData($request, $raw);
             $authspace = $this->getAuthspace($request);
             if ($authspace) {
-                $user = $userManager->findUserBy(array('id' => $id, 'authspace' => $authspace->getId()));
+                $user = $userManager->findUserBy(array('id' => $id, 'authSpace' => $authspace->getId()));
             }
 
             if (null === $user && $this->canPerformWithoutAuthspace($request)) {
@@ -174,7 +174,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
 
             $authspace = $this->getAuthspace($request);
             if ($authspace) {
-                $user = $userManager->findUserBy(array('id' => $id, 'authspace' => $authspace->getId()));
+                $user = $userManager->findUserBy(array('id' => $id, 'authSpace' => $authspace->getId()));
             }
 
             if (null === $user && $this->canPerformWithoutAuthspace($request)) {
@@ -242,7 +242,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
 
             $authspace = $this->getAuthspace($request);
             if ($authspace) {
-                $user = $userManager->findUserBy(array('id' => $id, 'authspace' => $authspace->getId()));
+                $user = $userManager->findUserBy(array('id' => $id, 'authSpace' => $authspace->getId()));
             }
 
             if (null === $user && $this->canPerformWithoutAuthspace($request)) {
