@@ -258,6 +258,38 @@ class UserController extends FOSRestController implements ClassResourceInterface
      * [GET] /users/id
      * Get a user id from a username.
      *
+     * @Get("/users/{id")
+     *
+     * @QueryParam(name="id", strict=true, description="The id.")
+     *
+     * @param string $id The id.
+     */
+    public function getAction($id)
+    {
+        try {
+            $request = $this->container->get('request');
+            $userManager = $this->container->get('fos_user.user_manager');
+
+            $authspace = $this->getClient($request)->getAuthSpace();
+
+            $user = $userManager->findUserBy(array('id' => $id, 'authSpace' => $authspace->getId()));
+
+            if (null === $user) {
+                $view = $this->view(array('error' => sprintf('User "%s" not found', $id)), 404);
+            } else {
+                $view = $this->view($user, 200);
+            }
+        } catch (\Exception $exception) {
+            $view = $this->view(array('error' => $exception->getMessage()), 400);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * [GET] /users/id
+     * Get a user id from a username.
+     *
      * @Get("/users/id")
      *
      * @QueryParam(name="username", strict=true, description="The username.")
