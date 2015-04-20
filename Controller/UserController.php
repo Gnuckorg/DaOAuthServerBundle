@@ -260,24 +260,17 @@ class UserController extends FOSRestController implements ClassResourceInterface
      *
      * @Get("/users/{id}")
      *
-     * @param string $id The id|username.
+     * @param string $id The id.
      */
     public function getAction($id)
     {
         try {
-            $user = null;
             $request = $this->container->get('request');
             $userManager = $this->container->get('fos_user.user_manager');
 
             $authspace = $this->getClient($request)->getAuthSpace();
 
-            if (is_numeric($id)) {
-                $user = $userManager->findUserBy(array('id' => $id, 'authSpace' => $authspace->getId()));
-            }
-
-            if (null === $user) {
-                $user = $userManager->findUserBy(array('username' => $id, 'authSpace' => $authspace->getId()));
-            }
+            $user = $userManager->findUserBy(array('id' => $id, 'authSpace' => $authspace->getId()));
 
             if (null === $user) {
                 $view = $this->view(array('error' => sprintf('User "%s" not found in authspace "%s"', $id, $authspace->getCode())), 404);
@@ -295,6 +288,38 @@ class UserController extends FOSRestController implements ClassResourceInterface
                         200
                     )
                 ;
+            }
+        } catch (\Exception $exception) {
+            $view = $this->view(array('error' => $exception->getMessage()), 400);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * [GET] /userids
+     * Get a user id from a username.
+     *
+     * @Get("/userids")
+     *
+     * @QueryParam(name="username", strict=true, description="The username.")
+     *
+     * @param string $username The username.
+     */
+    public function getFromUsernameAction($username)
+    {
+        try {
+            $request = $this->container->get('request');
+            $userManager = $this->container->get('fos_user.user_manager');
+
+            $authspace = $this->getClient($request)->getAuthSpace();
+
+            $user = $userManager->findUserBy(array('username' => $username, 'authSpace' => $authspace->getId()));
+
+            if (null === $user) {
+                $view = $this->view(array('error' => sprintf('User "%s" not found', $username)), 404);
+            } else {
+                $view = $this->view(array('id' => $user->getId()), 200);
             }
         } catch (\Exception $exception) {
             $view = $this->view(array('error' => $exception->getMessage()), 400);
