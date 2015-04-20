@@ -343,6 +343,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
     public function getIdAction($username)
     {
         try {
+            $user = null;
             $request = $this->container->get('request');
             $userManager = $this->container->get('fos_user.user_manager');
 
