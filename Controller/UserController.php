@@ -38,12 +38,16 @@ class UserController extends FOSRestController implements ClassResourceInterface
     )
     {
         try {
+            $user = null;
             $request = $this->container->get('request');
             $userManager = $this->container->get('fos_user.user_manager');
 
             $enabled = (Boolean) $enabled;
             $raw = $this->formatRawData($request, $raw);
-            $authspace = $this->getClient($request)->getAuthSpace();
+            $authspace = $this->getAuthspace($request);
+            if (null === $authspace) {
+                throw new \InvalidArgumentException('No authspace found');
+            }
 
             $user = $userManager->createUser();
             $encoder = $this->container->get('security.encoder_factory')->getEncoder($user);
@@ -53,7 +57,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
             $user->setEmail($email);
             $user->setPassword($password);
             $user->setRawData($raw);
-            $user->setAuthSpace($this->getClient($request)->getAuthSpace());
+            $user->setAuthSpace($authspace);
             $user->setEnabled($enabled);
 
             $userManager->updateUser($user);
@@ -92,37 +96,43 @@ class UserController extends FOSRestController implements ClassResourceInterface
     )
     {
         try {
+            $user = null;
             $request = $this->container->get('request');
             $userManager = $this->container->get('fos_user.user_manager');
 
             $enabled = (Boolean) $enabled;
             $raw = $this->formatRawData($request, $raw);
-            $authspace = $this->getClient($request)->getAuthSpace();
-            //$user = $userManager->findUserBy(array('username' => $username, 'authSpace' => $authspace->getId()));
-            $user = $userManager->findUserBy(array('id' => $id));
+            $authspace = $this->getAuthspace($request);
+            if ($authspace) {
+                $user = $userManager->findUserBy(array('id' => $id, 'authspace' => $authspace->getId()));
+            }
+
+            if (null === $user && $this->canPerformWithoutAuthspace($request)) {
+                $user = $userManager->findUserBy(array('id' => $id));
+            }
 
             if (null === $user) {
-                throw new \LogicException(sprintf(
+                $view = $this->view(array('error' => sprintf(
                     'User "%s"(%s) not found in authspace "%s".',
                     $id,
                     $username,
-                    $authspace->getId()
-                ));
+                    $authspace ? $authspace->getCode() : '-'
+                )), 404);
+            } else {
+                $encoder = $this->container->get('security.encoder_factory')->getEncoder($user);
+                $password = $encoder->encodePassword($password, $user->getSalt());
+
+                $user->setUsername($username);
+                $user->setEmail($email);
+                $user->setPassword($password);
+                $user->setRawData($raw);
+                $user->setAuthSpace($authspace);
+                $user->setEnabled($enabled);
+
+                $userManager->updateUser($user);
+
+                $view = $this->view(array(), 204);
             }
-
-            $encoder = $this->container->get('security.encoder_factory')->getEncoder($user);
-            $password = $encoder->encodePassword($password, $user->getSalt());
-
-            $user->setUsername($username);
-            $user->setEmail($email);
-            $user->setPassword($password);
-            $user->setRawData($raw);
-            $user->setAuthSpace($authspace);
-            $user->setEnabled($enabled);
-
-            $userManager->updateUser($user);
-
-            $view = $this->view(array(), 204);
         } catch (\LogicException $exception) {
             $view = $this->view(array('error' => $exception->getMessage()), 404);
         } catch (\Exception $exception) {
@@ -158,10 +168,19 @@ class UserController extends FOSRestController implements ClassResourceInterface
     )
     {
         try {
+            $user = null;
             $request = $this->container->get('request');
             $userManager = $this->container->get('fos_user.user_manager');
 
-            $user = $userManager->findUserBy(array('id' => $id));
+            $authspace = $this->getAuthspace($request);
+            if ($authspace) {
+                $user = $userManager->findUserBy(array('id' => $id, 'authspace' => $authspace->getId()));
+            }
+
+            if (null === $user && $this->canPerformWithoutAuthspace($request)) {
+                $user = $userManager->findUserBy(array('id' => $id));
+            }
+
             $enabled = (Boolean) $enabled;
             $oldRaw = $user->getRawData();
             if (null === $oldRaw) {
@@ -170,43 +189,40 @@ class UserController extends FOSRestController implements ClassResourceInterface
                 $oldRaw = array('content' => $oldRaw);
             }
             $raw = $this->formatRawData($request, $raw, $oldRaw);
-            $authspace = $this->getClient($request)->getAuthSpace();
 
             if (null === $user) {
-                throw new \LogicException(sprintf(
+                $view = $this->view(array('error' => sprintf(
                     'User "%s" not found in authspace "%s".',
                     $id,
-                    $authspace->getId()
-                ));
-            }
+                    $authspace ? $authspace->getCode() : '-'
+                )), 404);
+            } else {
+                $encoder = $this->container->get('security.encoder_factory')->getEncoder($user);
+                if (null !== $password) {
+                    $password = $encoder->encodePassword($password, $user->getSalt());
+                    $user->setPassword($password);
+                }
 
-            $encoder = $this->container->get('security.encoder_factory')->getEncoder($user);
-            if (null !== $password) {
-                $password = $encoder->encodePassword($password, $user->getSalt());
-                $user->setPassword($password);
-            }
+                if (null !== $username) {
+                    $user->setUsername($username);
+                }
+                if (null !== $email) {
+                    $user->setEmail($email);
+                }
+                if (null !== $raw) {
+                    $user->setRawData($raw);
+                }
+                if (null !== $authspace) {
+                    $user->setAuthSpace($authspace);
+                }
+                if (null !== $enabled) {
+                    $user->setEnabled($enabled);
+                }
 
-            if (null !== $username) {
-                $user->setUsername($username);
-            }
-            if (null !== $email) {
-                $user->setEmail($email);
-            }
-            if (null !== $raw) {
-                $user->setRawData($raw);
-            }
-            if (null !== $authspace) {
-                $user->setAuthSpace($authspace);
-            }
-            if (null !== $enabled) {
-                $user->setEnabled($enabled);
-            }
+                $userManager->updateUser($user);
 
-            $userManager->updateUser($user);
-
-            $view = $this->view(array(), 204);
-        } catch (\LogicException $exception) {
-            $view = $this->view(array('error' => $exception->getMessage()), 404);
+                $view = $this->view(array(), 204);
+            }
         } catch (\Exception $exception) {
             $view = $this->view(array('error' => $exception->getMessage()), 400);
         }
@@ -221,32 +237,40 @@ class UserController extends FOSRestController implements ClassResourceInterface
     public function deleteAction($id)
     {
         try {
+            $user = null;
             $userManager = $this->container->get('fos_user.user_manager');
 
-            $user = $userManager->findUserBy(array('id' => $id));
+            $authspace = $this->getAuthspace($request);
+            if ($authspace) {
+                $user = $userManager->findUserBy(array('id' => $id, 'authspace' => $authspace->getId()));
+            }
+
+            if (null === $user && $this->canPerformWithoutAuthspace($request)) {
+                $user = $userManager->findUserBy(array('id' => $id));
+            }
 
             if (null === $user) {
-                throw new \LogicException(sprintf(
+                $view = $this->view(array('error' => sprintf(
                     'User "%s" not found in authspace "%s".',
                     $id,
-                    $authspace->getId()
-                ));
-            }
+                    $authspace ? $authspace->getCode() : '-'
+                )), 404);
+            } else {
+                $raw = $user->getRawData();
+                if (null === $raw || empty($raw)) {
+                    $raw = array();
+                }
+                if (is_array($raw)) {
+                    $now = new \DateTime();
+                    $raw['deletedAt'] = $now->format(\DateTime::ISO8601);
+                    $user->setRawData($raw);
+                }
+                $user->setEnabled(false);
 
-            $raw = $user->getRawData();
-            if (null === $raw || empty($raw)) {
-                $raw = array();
-            }
-            if (is_array($raw)) {
-                $now = new \DateTime();
-                $raw['deletedAt'] = $now->format(\DateTime::ISO8601);
-                $user->setRawData($raw);
-            }
-            $user->setEnabled(false);
+                $userManager->updateUser($user);
 
-            $userManager->updateUser($user);
-
-            $view = $this->view(array(), 204);
+                $view = $this->view(array(), 204);
+            }
         } catch (\Exception $exception) {
             $view = $this->view(array('error' => $exception->getMessage()), 400);
         }
@@ -265,15 +289,25 @@ class UserController extends FOSRestController implements ClassResourceInterface
     public function getAction($id)
     {
         try {
+            $user = null;
             $request = $this->container->get('request');
             $userManager = $this->container->get('fos_user.user_manager');
 
-            $authspace = $this->getClient($request)->getAuthSpace();
+            $authspace = $this->getAuthspace($request);
+            if ($authspace) {
+                $user = $userManager->findUserBy(array('id' => $id, 'authSpace' => $authspace->getId()));
+            }
 
-            $user = $userManager->findUserBy(array('id' => $id, 'authSpace' => $authspace->getId()));
+            if (null === $user && $this->canPerformWithoutAuthspace($request)) {
+                $user = $userManager->findUserBy(array('id' => $id));
+            }
 
             if (null === $user) {
-                $view = $this->view(array('error' => sprintf('User "%s" not found in authspace "%s"', $id, $authspace->getCode())), 404);
+                $view = $this->view(array('error' => sprintf(
+                    'User "%s" not found in authspace "%s".',
+                    $id,
+                    $authspace ? $authspace->getCode() : '-'
+                )), 404);
             } else {
                 $view = $this
                     ->view(
@@ -281,7 +315,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
                             'id'       => $user->getId(),
                             'username' => $user->getUsername(),
                             'email'    => $user->getEmail(),
-                            'enabled'  => $user->getEnabled(),
+                            'enabled'  => $user->isEnabled(),
                             'roles'    => json_encode($user->getRoles()),
                             'raw'      => $user->getRaw()
                         ),
@@ -306,18 +340,27 @@ class UserController extends FOSRestController implements ClassResourceInterface
      *
      * @param string $username The username.
      */
-    public function getFromUsernameAction($username)
+    public function getIdAction($username)
     {
         try {
             $request = $this->container->get('request');
             $userManager = $this->container->get('fos_user.user_manager');
 
-            $authspace = $this->getClient($request)->getAuthSpace();
+            $authspace = $this->getAuthspace($request);
+            if ($authspace) {
+                $user = $userManager->findUserBy(array('username' => $username, 'authSpace' => $authspace->getId()));
+            }
 
-            $user = $userManager->findUserBy(array('username' => $username, 'authSpace' => $authspace->getId()));
+            if (null === $user && $this->canPerformWithoutAuthspace($request)) {
+                $user = $userManager->findUserBy(array('username' => $username));
+            }
 
             if (null === $user) {
-                $view = $this->view(array('error' => sprintf('User "%s" not found', $username)), 404);
+                $view = $this->view(array('error' => sprintf(
+                    'User "%s" not found in authspace "%s"',
+                    $username,
+                    $authspace ? $authspace->getCode() : '-'
+                )), 404);
             } else {
                 $view = $this->view(array('id' => $user->getId()), 200);
             }
@@ -343,12 +386,18 @@ class UserController extends FOSRestController implements ClassResourceInterface
         $available = false;
 
         try {
+            $user = null;
             $request = $this->container->get('request');
             $userManager = $this->container->get('fos_user.user_manager');
 
-            $authspace = $this->getClient($request)->getAuthSpace();
+            $authspace = $this->getAuthspace($request);
+            if ($authspace) {
+                $user = $userManager->findUserBy(array('username' => $username, 'authSpace' => $authspace->getId()));
+            }
 
-            $user = $userManager->findUserBy(array('username' => $username, 'authSpace' => $authspace->getId()));
+            if (null === $user && $this->canPerformWithoutAuthspace($request)) {
+                $user = $userManager->findUserBy(array('username' => $username));
+            }
 
             if (null === $user) {
                 $available = true;
@@ -409,6 +458,37 @@ class UserController extends FOSRestController implements ClassResourceInterface
     }
 
     /**
+     * Get the request authspace.
+     *
+     * @param Request $request The request.
+     *
+     * @return \Da\AuthCommonBundle\Model\AuthSpaceInterface The authspace.
+     */
+    protected function getAuthspace(Request $request)
+    {
+        $client = $this->getClient($request);
+
+        if (null === $client) {
+            return;
+        }
+
+        if (!$request->headers->has('X-API-Authspace')) {
+            return $client->getAuthSpace();
+        }
+
+        $authspaceCode = $request->headers->get('X-API-Authspace');
+
+        if ('-' === $authspaceCode) {
+            return;
+        }
+
+        return $this->container
+            ->get('da_oauth_server.authspace_manager.default')
+            ->findAuthSpaceBy(array('code' => $authspaceCode))
+        ;
+    }
+
+    /**
      * Get the current client.
      *
      * @param Request $request The request.
@@ -433,6 +513,33 @@ class UserController extends FOSRestController implements ClassResourceInterface
         }
 
         return $this->client;
+    }
+
+    /**
+     * Whether a request can be performed without an authspace.
+     *
+     * @param Request $request The request.
+     *
+     * @return boolean
+     */
+    protected function canPerformWithoutAuthspace(Request $request)
+    {
+        $client = $this->getClient($request);
+
+        if (null === $client) {
+            return false;
+        }
+
+        if (!$request->headers->has('X-API-Authspace')) {
+            return false;
+        }
+
+        // Use this header to specify that you do not want to use authspace in your query.
+        if ('-' !== $request->headers->get('X-API-Authspace')) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
