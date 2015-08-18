@@ -8,6 +8,11 @@ users:
     resource:    Da\OAuthServerBundle\Controller\UserController
     prefix:      api
 
+userlinks:
+    type:        rest
+    resource:    Da\OAuthServerBundle\Controller\UserLinkController
+    prefix:      api
+
 clients:
     type:        rest
     resource:    Da\OAuthServerBundle\Controller\ClientController

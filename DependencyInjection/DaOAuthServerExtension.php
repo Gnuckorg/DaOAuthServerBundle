@@ -27,6 +27,7 @@ class DaOAuthServerExtension extends Extension
 
         $container->setParameter('da_oauth_server.authspace.class', $config['authspace_class']);
         $container->setAlias('da_oauth_server.authspace_manager', $config['service']['authspace_manager']);
+        $container->setAlias('da_oauth_server.user_link_manager', $config['service']['user_link_manager']);
     }
 
     /**

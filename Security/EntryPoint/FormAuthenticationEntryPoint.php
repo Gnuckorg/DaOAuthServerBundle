@@ -174,6 +174,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                             array(
                                 '_username' => $requestParameters['_username'],
                                 '_password' => $requestParameters['_password'],
+                                '_link' => isset($requestParameters['_link']) ? $requestParameters['_link'] : null,
                                 '_remember_me' => isset($requestParameters['_remember_me']) ? 1 : 0,
                                 //'_csrf_token' => isset($requestParameters['_csrf_token']) ? $requestParameters['_csrf_token'] : null,
                                 '_authspace' => $authspace

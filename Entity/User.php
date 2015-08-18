@@ -47,14 +47,9 @@ class User extends BaseUser implements UserInterface
     protected $raw = '{}';
 
     /**
-     * ORM\Column(name="username_canonical", type="string", length=255, unique=false, nullable=false)
-     */
-    //protected $usernameCanonical;
-
-    /**
-     * ORM\Column(name="email_canonical", type="string", length=255, unique=false, nullable=false)
-     */
-    //protected $emailCanonical;
+     * @ORM\OneToMany(targetEntity="Da\OAuthServerBundle\Entity\UserLink", mappedBy="user")
+     **/
+    private $links;
 
     /**
      * To string.
@@ -102,6 +97,16 @@ class User extends BaseUser implements UserInterface
         $this->raw = $raw;
 
         return $this;
+    }
+
+    /**
+     * Get authentication links.
+     *
+     * @return array<UserLink> The links.
+     */
+    public function getLinks()
+    {
+        return $this->links;
     }
 
     /**
