@@ -2,15 +2,19 @@ parameters:
     da_oauth_server.http.request_provider.class: Da\OAuthServerBundle\Http\RequestProvider
     da_oauth_server.user_provider.authspace_email.class: Da\OAuthServerBundle\Security\AuthSpaceEmailUserProvider
     da_oauth_server.authspace_manager.class: Da\OAuthServerBundle\Doctrine\AuthSpaceManager
+    da_oauth_server.user_link_manager.class: Da\OAuthServerBundle\Doctrine\UserLinkManager
     da_oauth_server.client_manager.doctrine.class: Da\OAuthServerBundle\Doctrine\ClientManager
     da_oauth_server.user_manager.doctrine.class: Da\OAuthServerBundle\Doctrine\UserManager
     da_oauth_server.client.class: Da\OAuthServerBundle\Entity\Client
     da_oauth_server.user.class: Da\OAuthServerBundle\Entity\User
+    da_oauth_server.user_link.class: Da\OAuthServerBundle\Entity\UserLink
     da_oauth_server.access_token.class: Da\OAuthServerBundle\Entity\AccessToken
     da_oauth_server.entity_manager.class: ~
     da_oauth_server.event.listener.locale.class: Da\OAuthServerBundle\Event\LocaleListener
     da_oauth_server.event.listener.authorization.class: Da\OAuthServerBundle\Event\AuthorizationListener
     da_oauth_server.security.entry_point.form.class: Da\OAuthServerBundle\Security\EntryPoint\FormAuthenticationEntryPoint
+    da_oauth_server.security.authentication.provider.dao.class: Da\OAuthServerBundle\Security\Authentication\Provider\DaoAuthenticationProvider
+    da_oauth_server.security.authentication.listener.form.class: Da\OAuthServerBundle\Security\Firewall\UsernamePasswordFormAuthenticationListener
 
 services:
     da_oauth_server.http.request_provider:
@@ -27,6 +31,11 @@ services:
         public: true
         arguments: [@fos_oauth_server.entity_manager, %da_oauth_server.authspace.class%]
 
+    da_oauth_server.user_link_manager.default:
+        class: %da_oauth_server.user_link_manager.class%
+        public: true
+        arguments: [@fos_oauth_server.entity_manager, %da_oauth_server.user_link.class%]
+
     da_oauth_server.client_manager.doctrine:
         class: %da_oauth_server.client_manager.doctrine.class%
         arguments: [@doctrine, %da_oauth_server.client.class%, %da_oauth_server.entity_manager.class%]
@@ -38,13 +47,13 @@ services:
     da_oauth_server.event.listener.locale:
         class: %da_oauth_server.event.listener.locale.class%
         arguments: [%locale%]
-        tags: 
+        tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 100 }
 
     da_oauth_server.event.listener.authorization:
         class: %da_oauth_server.event.listener.authorization.class%
         arguments: []
-        tags: 
+        tags:
             - { name: kernel.event_listener, event: fos_oauth_server.pre_authorization_process, method: onPreAuthorizationProcess }
             - { name: kernel.event_listener, event: fos_oauth_server.post_authorization_process, method: onPostAuthorizationProcess }
 
@@ -52,6 +61,16 @@ services:
         class: %da_oauth_server.security.entry_point.form.class%
         abstract: true
         arguments: [@http_kernel, @service_container, @da_oauth_server.controller.authorize]
+
+    da_oauth_server.security.authentication.provider.dao:
+        parent: security.authentication.provider.dao
+        class: %da_oauth_server.security.authentication.provider.dao.class%
+        abstract: true
+
+    da_oauth_server.security.authentication.listener.form:
+        parent: security.authentication.listener.form
+        class: %da_oauth_server.security.authentication.listener.form.class%
+        abstract: true
 
     da_oauth_server.controller.authorize:
         class: Da\OAuthServerBundle\Controller\AuthorizeController

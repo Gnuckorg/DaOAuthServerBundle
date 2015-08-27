@@ -28,6 +28,7 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                         ->children()
                             ->scalarNode('authspace_manager')->defaultValue('da_oauth_server.authspace_manager.default')->end()
+                            ->scalarNode('user_link_manager')->defaultValue('da_oauth_server.user_link_manager.default')->end()
                         ->end()
                     ->end()
                 ->end()
