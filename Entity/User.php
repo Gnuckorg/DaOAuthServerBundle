@@ -18,6 +18,7 @@ use Da\AuthCommonBundle\Model\UserInterface;
 
 /**
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(
  *     name="User",
  *     uniqueConstraints={
@@ -52,6 +53,20 @@ class User extends BaseUser implements UserInterface
     private $links;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=true)
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+     */
+    private $updatedAt;
+
+    /**
      * To string.
      *
      * @return string
@@ -61,6 +76,26 @@ class User extends BaseUser implements UserInterface
         return sprintf('%s',
             $this->getEmail()
         );
+    }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function onCreate()
+    {
+        $now = new \DateTime("now");
+        $this
+            ->setCreatedAt($now)
+            ->setUpdatedAt($now)
+        ;
+    }
+
+    /**
+     * @ORM\PreUpdate()
+     */
+    public function onUpdate()
+    {
+        $this->setUpdatedAt(new \DateTime("now"));
     }
 
     /**
@@ -123,6 +158,52 @@ class User extends BaseUser implements UserInterface
     public function setRawData(array $raw)
     {
         $this->raw = json_encode($raw);
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Offer
+     */
+    public function setCreatedAt(\DateTime $createdAt = null)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return Offer
+     */
+    public function setUpdatedAt(\DateTime $updatedAt = null)
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
