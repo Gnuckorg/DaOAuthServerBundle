@@ -467,9 +467,13 @@ class UserController extends FOSRestController implements ClassResourceInterface
      */
     protected function getAuthspace(Request $request)
     {
-        $client = $this->getClient($request);
+        try {
+            $client = $this->getClient($request);
+        } catch (NotFoundHttpException $e) {
+            // Can have no client.
+        }
 
-        if (null === $client) {
+        if (!isset($client)) {
             return;
         }
 
@@ -525,9 +529,13 @@ class UserController extends FOSRestController implements ClassResourceInterface
      */
     protected function canPerformWithoutAuthspace(Request $request)
     {
-        $client = $this->getClient($request);
+        try {
+            $client = $this->getClient($request);
+        } catch (NotFoundHttpException $e) {
+            // Can have no client.
+        }
 
-        if (null === $client) {
+        if (!isset($client)) {
             return false;
         }
 
