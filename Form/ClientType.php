@@ -18,7 +18,14 @@ class ClientType extends AbstractType
             ->add('name')
             ->add('scope')
             ->add('authSpace')
-            ->add('redirectUris', 'serialized_array')
+            ->add('redirectUris', 'serialized_array', array(
+                'type' => 'url',
+            ))
+            ->add('allowedGrantTypes', 'serialized_array', array(
+                'type' => 'text',
+            ))
+            ->add('trusted', 'switch_checkbox', array('required' => false))
+            ->add('clientLoginPath')
         ;
     }
 

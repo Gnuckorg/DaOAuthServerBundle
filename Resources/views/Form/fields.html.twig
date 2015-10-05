@@ -4,32 +4,32 @@
     {% endspaceless %}
 
     <script type="text/javascript">
-        var collectionHolder = $('.da_oauthserver__serialized_array');
-        var $addLink = $('<a href="#" class="btn btn-default add">{{ 'Add'|trans }}</a>');
-        var $newLink = $('<div></div>').append($addLink);
+        var collectionHolder{{ form.vars.id | title }} = $('#{{ form.vars.id }}');
+        var $addLink{{ form.vars.id | title }} = $('<a href="#" class="btn btn-default add">{{ 'Add'|trans }}</a>');
+        var $newLink{{ form.vars.id | title }} = $('<div></div>').append($addLink{{ form.vars.id | title }});
 
         jQuery(document).ready(function() {
-            collectionHolder.append($newLink);
+            collectionHolder{{ form.vars.id | title }}.append($newLink{{ form.vars.id | title }});
 
-            $addLink.on('click', function(e) {
+            $addLink{{ form.vars.id | title }}.on('click', function(e) {
                 e.preventDefault();
-                addForm(collectionHolder, $newLink);
+                addForm{{ form.vars.id | title }}(collectionHolder{{ form.vars.id | title }}, $newLink{{ form.vars.id | title }});
             });
 
-            collectionHolder.find('.da_oauthserver__serialized_array_item').parent().each(function() {
-                addFormDeleteLink($(this));
+            collectionHolder{{ form.vars.id | title }}.find('.da_oauthserver__serialized_array_item').parent().each(function() {
+                addFormDeleteLink{{ form.vars.id | title }}($(this));
             });
         });
 
-        function addForm(collectionHolder, $newLink) {
+        function addForm{{ form.vars.id | title }}(collectionHolder, $newLink) {
             var prototype = collectionHolder.attr('data-prototype');
             var newForm = prototype.replace(/__name__/g, collectionHolder.children().length);
             var $newFormDiv = $('<div></div>').append(newForm);
             $newLink.before($newFormDiv);
-            addFormDeleteLink($newFormDiv);
+            addFormDeleteLink{{ form.vars.id | title }}($newFormDiv);
         }
 
-        function addFormDeleteLink($formDiv) {
+        function addFormDeleteLink{{ form.vars.id | title }}($formDiv) {
             var $removeFormA = $('<a href="#" class="btn btn-default">Delete</a>');
             $formDiv.append($removeFormA);
 
