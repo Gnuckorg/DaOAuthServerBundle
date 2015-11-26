@@ -331,6 +331,80 @@ class UserController extends FOSRestController implements ClassResourceInterface
     }
 
     /**
+     * [GET] /users
+     * Get users.
+     *
+     * @Get("/users")
+     *
+     * @RequestParam(name="username", strict=true, nullable=true, description="The username.")
+     * @RequestParam(name="email", strict=true, nullable=true, description="The email.")
+     * @RequestParam(name="enabled", requirements="0|1", strict=true, nullable=true, description="Enabled user?")
+     *
+     * @param string|null $username The username.
+     * @param string|null $email    The email.
+     * @param string|null $enabled  Enabled user?
+     */
+    public function cgetAction($id)
+    {
+        try {
+            $user = null;
+            $request = $this->container->get('request');
+            $userManager = $this->container->get('da_oauth_server.user_manager.doctrine');
+
+            $authspace = $this->getAuthspace($request);
+
+            $criteria = array(
+                'authSpace' => $authspace
+            );
+            if (null !== $username) {
+                $criteria['username'] = $username;
+            }
+            if (null !== $email) {
+                $criteria['email'] = $email;
+            }
+            if (null !== $enabled) {
+                $enabled = (Boolean) $enabled;
+                $criteria['enabled'] = $enabled;
+            }
+
+            $users = array();
+            if ($authspace) {
+                $users = $userManager->retrieveUsersBy($criteria);
+            }
+
+            $data = array();
+            foreach ($users as $user) {
+                $data[] = array(
+                    'id'       => $user->getId(),
+                    'username' => $user->getUsername(),
+                    'email'    => $user->getEmail(),
+                    'enabled'  => $user->isEnabled(),
+                    'roles'    => json_encode($user->getRoles()),
+                    'raw'      => $user->getRaw()
+                );
+            }
+
+            $view = $this
+                ->view(
+                    array(
+                        'id'       => $user->getId(),
+                        'username' => $user->getUsername(),
+                        'email'    => $user->getEmail(),
+                        'enabled'  => $user->isEnabled(),
+                        'roles'    => json_encode($user->getRoles()),
+                        'raw'      => $user->getRaw()
+                    ),
+                    200
+                )
+            ;
+        } catch (\Exception $exception) {
+            $view = $this->view(array('error' => $exception->getMessage()), 400);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
      * [GET] /userids
      * Get a user id from a username.
      *
