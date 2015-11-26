@@ -181,7 +181,6 @@ class UserController extends FOSRestController implements ClassResourceInterface
                 $user = $userManager->findUserBy(array('id' => $id));
             }
 
-            $enabled = (Boolean) $enabled;
             $oldRaw = $user->getRawData();
             if (null === $oldRaw) {
                 $oldRaw = array();
@@ -216,6 +215,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
                     $user->setAuthSpace($authspace);
                 }
                 if (null !== $enabled) {
+                    $enabled = (Boolean) $enabled;
                     $user->setEnabled($enabled);
                 }
 
