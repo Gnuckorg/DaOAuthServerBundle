@@ -344,7 +344,11 @@ class UserController extends FOSRestController implements ClassResourceInterface
      * @param string|null $email    The email.
      * @param string|null $enabled  Enabled user?
      */
-    public function cgetAction($id)
+    public function cgetAction(
+        $username,
+        $email,
+        $enabled
+    )
     {
         try {
             $user = null;
@@ -386,14 +390,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
 
             $view = $this
                 ->view(
-                    array(
-                        'id'       => $user->getId(),
-                        'username' => $user->getUsername(),
-                        'email'    => $user->getEmail(),
-                        'enabled'  => $user->isEnabled(),
-                        'roles'    => json_encode($user->getRoles()),
-                        'raw'      => $user->getRaw()
-                    ),
+                    $data,
                     200
                 )
             ;
