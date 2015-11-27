@@ -149,7 +149,7 @@ class User extends BaseUser implements UserInterface
      */
     public function getRawData()
     {
-        return (array)json_decode($this->raw);
+        return json_decode($this->raw, true);
     }
 
     /**
@@ -157,7 +157,7 @@ class User extends BaseUser implements UserInterface
      */
     public function setRawData(array $raw)
     {
-        $this->raw = json_encode($raw);
+        $this->raw = json_encode($raw, JSON_UNESCAPED_UNICODE);
 
         return $this;
     }

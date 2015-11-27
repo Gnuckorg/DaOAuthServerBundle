@@ -65,11 +65,23 @@ class UserManager implements UserManagerInterface
     public function retrieveUserByAccessToken($accessToken)
     {
         $accessToken = $this->em->getRepository($this->accessTokenClass)->findOneBy(array('token' => $accessToken));
-            
+
         if (null === $accessToken) {
             throw new InvalidAccessTokenException();
         }
 
         return $accessToken->getUser();
+    }
+
+    /**
+     * Retrieve users by criteria.
+     *
+     * @param array $criteria The criteria.
+     *
+     * @return array The users.
+     */
+    public function retrieveUsersBy($criteria)
+    {
+        return $this->em->getRepository($this->class)->findBy($criteria);
     }
 }
