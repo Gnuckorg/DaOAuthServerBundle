@@ -336,9 +336,9 @@ class UserController extends FOSRestController implements ClassResourceInterface
      *
      * @Get("/users")
      *
-     * @RequestParam(name="username", strict=true, nullable=true, description="The username.")
-     * @RequestParam(name="email", strict=true, nullable=true, description="The email.")
-     * @RequestParam(name="enabled", requirements="0|1", strict=true, nullable=true, description="Enabled user?")
+     * @QueryParam(name="username", strict=true, nullable=true, description="The username.")
+     * @QueryParam(name="email", strict=true, nullable=true, description="The email.")
+     * @QueryParam(name="enabled", requirements="0|1", strict=true, nullable=true, description="Enabled user?")
      *
      * @param string|null $username The username.
      * @param string|null $email    The email.
@@ -391,6 +391,65 @@ class UserController extends FOSRestController implements ClassResourceInterface
             $view = $this
                 ->view(
                     $data,
+                    200
+                )
+            ;
+        } catch (\Exception $exception) {
+            $view = $this->view(array('error' => $exception->getMessage()), 400);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * [GET] /usercount
+     * Get users count.
+     *
+     * @Get("/usercount")
+     *
+     * @QueryParam(name="username", strict=true, nullable=true, description="The username.")
+     * @QueryParam(name="email", strict=true, nullable=true, description="The email.")
+     * @QueryParam(name="enabled", requirements="0|1", strict=true, nullable=true, description="Enabled user?")
+     *
+     * @param string|null $username The username.
+     * @param string|null $email    The email.
+     * @param string|null $enabled  Enabled user?
+     */
+    public function countAction(
+        $username,
+        $email,
+        $enabled
+    )
+    {
+        try {
+            $user = null;
+            $request = $this->container->get('request');
+            $userManager = $this->container->get('da_oauth_server.user_manager.doctrine');
+
+            $authspace = $this->getAuthspace($request);
+
+            $criteria = array(
+                'authSpace' => $authspace
+            );
+            if (null !== $username) {
+                $criteria['username'] = $username;
+            }
+            if (null !== $email) {
+                $criteria['email'] = $email;
+            }
+            if (null !== $enabled) {
+                $enabled = (Boolean) $enabled;
+                $criteria['enabled'] = $enabled;
+            }
+
+            $count = 0;
+            if ($authspace) {
+                $count = $userManager->countUsersBy($criteria);
+            }
+
+            $view = $this
+                ->view(
+                    array('count' => $count),
                     200
                 )
             ;

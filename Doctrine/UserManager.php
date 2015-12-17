@@ -84,4 +84,38 @@ class UserManager implements UserManagerInterface
     {
         return $this->em->getRepository($this->class)->findBy($criteria);
     }
+
+    /**
+     * Count users by criteria.
+     *
+     * @param array $criteria The criteria.
+     *
+     * @return int The count.
+     */
+    public function countUsersBy($criteria)
+    {
+        $request = $this->em->getRepository($this->class)
+            ->createQueryBuilder('u')
+            ->select('count(u.id)')
+        ;
+
+        $where = '';
+        foreach ($criteria as $name => $value) {
+            if ('' !== $where) {
+                $where .= ' AND ';
+            }
+            $where .= sprintf('u.%s = :%s', $name, $name);
+        }
+
+        $request->where($where);
+
+        foreach ($criteria as $name => $value) {
+            $request->setParameter($name, $value);
+        }
+
+        return $request
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
 }
