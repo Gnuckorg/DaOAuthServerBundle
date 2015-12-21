@@ -5,7 +5,7 @@ This bundle for Symfony2 allows to use the oauth mechanism in different "authspa
 
 Here is a list of **how to**:
 
-[Install and use the bundle](installation.md)
-[Create a test sets](test.md)
-[Define a new authspace](authspace.md)
-[Make login looking like simple non oauth login](simple-login.md)
+- [Install and use the bundle](installation.md)
+- [Create a test sets](test.md)
+- [Define a new authspace](authspace.md)
+- [Make login looking like simple non oauth login](simple-login.md)
