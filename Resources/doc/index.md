@@ -1,5 +1,5 @@
-Documentation of DaOAuthServerBundle
-====================================
+DaOAuthServerBundle Documentation
+=================================
 
 This bundle for Symfony2 allows to use the oauth mechanism in different "authspaces". It gives the possibility to build a unique SSO oauth server acting as if you had several ones.
 
