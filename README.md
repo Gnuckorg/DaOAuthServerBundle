@@ -1,15 +1,15 @@
 DaOAuthServerBundle
 ===================
 
-This bundle for Symfony2 allows to use the oauth mechanism in different "authspaces". It gives the possibility to build a unique SSO oauth server acting as if you had several ones.
+This bundle for Symfony2 (built upon [FOSOAuthServerBundle](https://github.com/FriendsOfSymfony/FOSOAuthServerBundle)) allows to use the oauth mechanism in different "authspaces". It gives the possibility to build a unique SSO oauth server acting as if you had several ones.
 
 Documentation
 -------------
 
 Learn how to use the bundle with the [documentation](Resources/doc/index.md).
 
-Suggestion
-----------
+Suggestions
+-----------
 
 Want to be client of your oauth SSO?
 Take a look at the [DaOAuthClientBundle](https://github.com/Gnuckorg/DaOAuthClientBundle)!

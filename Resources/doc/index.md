@@ -8,4 +8,6 @@ Here is a list of **how to**:
 - [Install and use the bundle](installation.md)
 - [Create a test sets](test.md)
 - [Define a new authspace](authspace.md)
-- [Make login looking like simple non oauth login](simple-login.md)
+- [Make login looking like simple non oauth login](simple_login.md)
+
+Take a look at the [documentation of FOSOAuthServerBundle](https://github.com/FriendsOfSymfony/FOSOAuthServerBundle) for more.
