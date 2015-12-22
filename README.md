@@ -6,6 +6,10 @@ This bundle for Symfony2 (built upon [FOSOAuthServerBundle](https://github.com/F
 Documentation
 -------------
 
+Here is a diagram of the multi authspaces oauth flow:
+
+![flow](Resources/doc/flow.png)
+
 Learn how to use the bundle with the [documentation](Resources/doc/index.md).
 
 Suggestions
