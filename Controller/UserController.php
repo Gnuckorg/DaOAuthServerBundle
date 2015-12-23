@@ -312,12 +312,17 @@ class UserController extends FOSRestController implements ClassResourceInterface
                 $view = $this
                     ->view(
                         array(
-                            'id'       => $user->getId(),
-                            'username' => $user->getUsername(),
-                            'email'    => $user->getEmail(),
-                            'enabled'  => $user->isEnabled(),
-                            'roles'    => json_encode($user->getRoles()),
-                            'raw'      => $user->getRaw()
+                            'id'         => $user->getId(),
+                            'username'   => $user->getUsername(),
+                            'email'      => $user->getEmail(),
+                            'enabled'    => $user->isEnabled(),
+                            'last_login' => $user->getLastLogin(),
+                            'locked'     => $user->isLocked(),
+                            'expired'    => $user->isExpired(),
+                            'created_at' => $user->getCreatedAt(),
+                            'updated_at' => $user->getUpdatedAt(),
+                            'roles'      => json_encode($user->getRoles()),
+                            'raw'        => $user->getRaw()
                         ),
                         200
                     )
@@ -379,12 +384,17 @@ class UserController extends FOSRestController implements ClassResourceInterface
             $data = array();
             foreach ($users as $user) {
                 $data[] = array(
-                    'id'       => $user->getId(),
-                    'username' => $user->getUsername(),
-                    'email'    => $user->getEmail(),
-                    'enabled'  => $user->isEnabled(),
-                    'roles'    => json_encode($user->getRoles()),
-                    'raw'      => $user->getRaw()
+                    'id'         => $user->getId(),
+                    'username'   => $user->getUsername(),
+                    'email'      => $user->getEmail(),
+                    'enabled'    => $user->isEnabled(),
+                    'last_login' => $user->getLastLogin(),
+                    'locked'     => $user->isLocked(),
+                    'expired'    => $user->isExpired(),
+                    'created_at' => $user->getCreatedAt(),
+                    'updated_at' => $user->getUpdatedAt(),
+                    'roles'      => json_encode($user->getRoles()),
+                    'raw'        => $user->getRaw()
                 );
             }
 
