@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class AuthspaceType extends AbstractType
+class AuthSpaceType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
