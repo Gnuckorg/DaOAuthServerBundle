@@ -41,9 +41,11 @@ class FormLoginFactory extends BaseFactory
     protected function createAuthProvider(ContainerBuilder $container, $id, $config, $userProviderId)
     {
         $provider = 'security.authentication.provider.da_oauth_server.dao.'.$id;
+        $userChecker = 'security.user_checker.'.$id;
         $container
             ->setDefinition($provider, new DefinitionDecorator('da_oauth_server.security.authentication.provider.dao'))
             ->replaceArgument(0, new Reference($userProviderId))
+            ->replaceArgument(1, new Reference($userChecker))
             ->replaceArgument(2, $id)
         ;
 
