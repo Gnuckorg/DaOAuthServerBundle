@@ -18,7 +18,7 @@ use Da\AuthCommonBundle\Model\AuthSpaceInterface;
  * An AuthSpace is an authspace of definition for a user and a client.
  *
  * @ORM\Entity
- * @ORM\Table(name="AuthSpace", uniqueConstraints={@ORM\UniqueConstraint(name="code_idx", columns={"code"})})
+ * @ORM\Table(name="auth_space", uniqueConstraints={@ORM\UniqueConstraint(name="code_idx", columns={"code"})})
  */
 class AuthSpace implements AuthSpaceInterface
 {
@@ -29,18 +29,18 @@ class AuthSpace implements AuthSpaceInterface
      */
     protected $id;
 
-    /** @ORM\Column(type="string") */  
+    /** @ORM\Column(type="string") */
     protected $code;
 
-    /** @ORM\Column(type="string") */  
+    /** @ORM\Column(type="string") */
     protected $name;
 
     /**
      * To string.
-     * 
+     *
      * @return string
      */
-    public function __toString() 
+    public function __toString()
     {
         return sprintf('%s',
             $this->getName()

@@ -20,7 +20,7 @@ use Da\AuthCommonBundle\Model\UserInterface;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(
- *     name="User",
+ *     name="user",
  *     uniqueConstraints={
  *         @ORM\UniqueConstraint(name="username_authspace", columns={"username_canonical", "auth_space_id"}),
  *         @ORM\UniqueConstraint(name="email_authspace", columns={"email_canonical", "auth_space_id"})

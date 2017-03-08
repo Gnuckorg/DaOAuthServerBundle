@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Entity
  * @ORM\Table(
- *     name="UserLink",
+ *     name="user_link",
  *     uniqueConstraints={
  *         @ORM\UniqueConstraint(name="user_key", columns={"user", "`key`"}),
  *         @ORM\UniqueConstraint(name="key_value", columns={"`key`", "value"})

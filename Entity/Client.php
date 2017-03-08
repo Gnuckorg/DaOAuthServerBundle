@@ -19,6 +19,7 @@ use Da\AuthCommonBundle\Model\ClientInterface;
 
 /**
  * @ORM\Entity
+ * @ORM\Table(name="client")
  */
 class Client extends BaseClient implements ClientInterface
 {
