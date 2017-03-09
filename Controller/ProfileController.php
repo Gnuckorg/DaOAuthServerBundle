@@ -2,7 +2,6 @@
 
 namespace Da\OAuthServerBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Form\FormInterface;
@@ -22,8 +21,9 @@ class ProfileController extends BaseProfileController
      *
      * @Route("/profile/{authspace}")
      */
-    public function editAction(Request $request)
+    public function editAction()
     {
+        $request = $this->container->get('request');
         $user = $this->container->get('security.context')->getToken()->getUser();
         if (!is_object($user) || !$user instanceof UserInterface) {
             throw new AccessDeniedException('This user does not have access to this section.');
