@@ -5,10 +5,8 @@ namespace Da\OAuthServerBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-/**
- * @Template()
- */
 class InfoController extends Controller
 {
     /**
@@ -18,12 +16,12 @@ class InfoController extends Controller
     {
         $user = $this->get('security.context')->getToken()->getUser();
 
-        return array(
-            'id' => $user->getId(),
+        return new JsonResponse(array(
+            'id'       => $user->getId(),
             'username' => $user->getUsername(),
-            'email' => $user->getEmail(),
-            'roles' => json_encode($user->getRoles()),
-            'raw' => $user->getRaw()
-        );
+            'email'    => $user->getEmail(),
+            'roles'    => json_encode($user->getRoles()),
+            'raw'      => $user->getRaw(),
+        ));
     }
 }
