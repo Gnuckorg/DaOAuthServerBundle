@@ -185,9 +185,12 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                             array(),
                             $request->cookies->all(),
                             array(),
-                            array(
-                                'REQUEST_METHOD' => 'POST',
-                                'REQUEST_URI' => $requestUri
+                            array_merge(
+                                $request->server->all(),
+                                array(
+                                    'REQUEST_METHOD' => 'POST',
+                                    'REQUEST_URI' => $requestUri
+                                )
                             )
                         );
 
