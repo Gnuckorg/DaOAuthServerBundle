@@ -96,9 +96,12 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
 
             if ($client->isTrusted() && $clientLoginPath) {
                 $query = '';
-                $requestParameters = $request->query->all();
-                $username = $request->query->get('_username', null);
-                $account = $request->query->get('account', null);
+                $requestParameters = array_merge(
+                    $request->query->all(),
+                    $request->request->all()
+                );
+                $username = $request->get('_username', null);
+                $account = $request->get('account', null);
                 $authError = '';
 
                 // Forward the client login form to the SSO for authentication.
@@ -145,8 +148,8 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                         }
 
                         $accountRequest = $request->duplicate(
-                            array(),
-                            $requestParameters,
+                            $request->query->all(),
+                            $request->request->all(),
                             array(),
                             $request->cookies->all(),
                             array(),
@@ -213,7 +216,10 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                 if ((null === $username && !$account) || !empty($authError)) {
                     $errorPath = $request->query->get('error_path', null);
                     $redirectUri = $request->query->get('redirect_uri');
-                    $parsedUri = parse_url($redirectUri);
+                    $parsedUri = array_merge(
+                        parse_url($redirectUri),
+                        parse_url($clientLoginPath)
+                    );
 
                     // Handle proxy connection errors.
                     if (!empty($authError) && $errorPath) {
@@ -241,7 +247,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                             '%s://%s%s?%s',
                             $parsedUri['scheme'],
                             $parsedUri['host'],
-                            $clientLoginPath,
+                            isset($parsedUri['path']) ? $parsedUri['path'] : $clientLoginPath,
                             sprintf(
                                 '%s&%s',
                                 http_build_query(array(
