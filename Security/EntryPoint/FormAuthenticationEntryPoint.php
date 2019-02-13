@@ -216,7 +216,10 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                 if ((null === $username && !$account) || !empty($authError)) {
                     $errorPath = $request->query->get('error_path', null);
                     $redirectUri = $request->query->get('redirect_uri');
-                    $parsedUri = parse_url($redirectUri);
+                    $parsedUri = array_merge(
+                        parse_url($redirectUri),
+                        parse_url($clientLoginPath)
+                    );
 
                     // Handle proxy connection errors.
                     if (!empty($authError) && $errorPath) {
@@ -244,7 +247,7 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                             '%s://%s%s?%s',
                             $parsedUri['scheme'],
                             $parsedUri['host'],
-                            $clientLoginPath,
+                            isset($parsedUri['path']) ? $parsedUri['path'] : $clientLoginPath,
                             sprintf(
                                 '%s&%s',
                                 http_build_query(array(
