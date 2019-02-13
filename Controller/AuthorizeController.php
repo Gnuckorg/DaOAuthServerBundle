@@ -32,7 +32,6 @@ class AuthorizeController extends BaseAuthorizeController implements ClientProvi
     {
         $client = $this->getClient();
         $authspace = $client->getAuthSpace()->getCode();
-
         if (null !== $request->request->get('accepted', null) || null !== $request->request->get('rejected', null)) {
             $request->attributes->add(array('authspace' => $authspace));
 
@@ -60,8 +59,8 @@ class AuthorizeController extends BaseAuthorizeController implements ClientProvi
      */
     public function authorizeAuthSpaceAction(Request $request, $authspace)
     {
-        $account = $request->query->get('account', false);
-        $logout = $request->query->get('logout', false);
+        $account = $request->get('account', false);
+        $logout = $request->get('logout', false);
 
         if ($account || $logout) {
             $entryPoint = $this->container->get(

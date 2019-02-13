@@ -96,9 +96,12 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
 
             if ($client->isTrusted() && $clientLoginPath) {
                 $query = '';
-                $requestParameters = $request->query->all();
-                $username = $request->query->get('_username', null);
-                $account = $request->query->get('account', null);
+                $requestParameters = array_merge(
+                    $request->query->all(),
+                    $request->request->all()
+                );
+                $username = $request->get('_username', null);
+                $account = $request->get('account', null);
                 $authError = '';
 
                 // Forward the client login form to the SSO for authentication.
@@ -145,8 +148,8 @@ class FormAuthenticationEntryPoint extends BaseEntryPoint
                         }
 
                         $accountRequest = $request->duplicate(
-                            array(),
-                            $requestParameters,
+                            $request->query->all(),
+                            $request->request->all(),
                             array(),
                             $request->cookies->all(),
                             array(),
