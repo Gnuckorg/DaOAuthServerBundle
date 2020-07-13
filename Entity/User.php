@@ -15,6 +15,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use Da\AuthCommonBundle\Model\AuthSpaceInterface;
 use Da\AuthCommonBundle\Model\UserInterface;
+use Tms\Bundle\LoggerBundle\Logger\LoggableInterface;
 
 /**
  * @ORM\Entity
@@ -27,7 +28,7 @@ use Da\AuthCommonBundle\Model\UserInterface;
  *     }
  * )
  */
-class User extends BaseUser implements UserInterface
+class User extends BaseUser implements LoggableInterface, UserInterface
 {
     /**
      * @ORM\Id
